@@ -1,27 +1,43 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Colossal;
 using Colossal.Json;
 using Colossal.Localization;
-using Colossal.Logging;
 using Game.SceneFlow;
 
 namespace StarQ.Shared.Extensions
 {
-    public class LocaleHelper
+    public partial class LocaleHelper
     {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         private static string Id;
+        private static string ModName;
         private static Func<Dictionary<string, string>> GetReplacements;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+        private static Action AddLocale;
+        private static LocalizationManager localizationManager;
 
-        public static void Init(string modId, Func<Dictionary<string, string>> getReplacements)
+        public static Dictionary<string, string> toUpdate = new();
+
+        public static void Init(
+            string modId,
+            string modName = null,
+            Func<Dictionary<string, string>> getReplacements = null,
+            Action addLocale = null
+        )
         {
             Id = modId;
+            ModName = modName;
             GetReplacements = getReplacements;
+            AddLocale = addLocale;
+            localizationManager = GameManager.instance.localizationManager;
+            localizationManager.onActiveDictionaryChanged += OnActiveDictionaryChanged;
+            foreach (var item in new LocaleHelper($"{Id}.Locale.json").GetAvailableLanguages())
+                localizationManager.AddSource(item.LocaleId, item);
+
+            LogHelper.SendLog("Initing LocaleHelper", LogLevel.DEV);
         }
 
         private readonly Dictionary<string, Dictionary<string, string>> _locale;
@@ -44,9 +60,7 @@ namespace StarQ.Shared.Extensions
                         Path.GetFileNameWithoutExtension(dictionaryResourceName) + "."
                     )
                 )
-                {
                     continue;
-                }
 
                 var key = Path.GetFileNameWithoutExtension(name);
 
@@ -59,9 +73,7 @@ namespace StarQ.Shared.Extensions
                 {
                     using var resourceStream = assembly.GetManifestResourceStream(resourceName);
                     if (resourceStream == null)
-                    {
                         return new Dictionary<string, string>();
-                    }
 
                     using var reader = new StreamReader(resourceStream, Encoding.UTF8);
                     JSON.MakeInto<Dictionary<string, string>>(
@@ -79,27 +91,53 @@ namespace StarQ.Shared.Extensions
             }
         }
 
-        public static string Translate(string id, string? fallback = null)
+        public static string Translate(string id, string fallback = null)
         {
-            if (
-                GameManager.instance.localizationManager.activeDictionary.TryGetValue(
-                    id,
-                    out var result
-                )
-            )
-            {
+            if (localizationManager.activeDictionary.TryGetValue(id, out var result))
                 return result;
-            }
+            if (fallback != null)
+                return fallback;
+            return id;
+        }
 
-            return fallback ?? id;
+        public static void AddLocalization(string id, string value) => toUpdate[id] = value;
+
+        public static string GetServiceName(string id) => Translate($"Services.NAME[{id}]");
+
+        public static string GetSubserviceName(string id) => Translate($"SubServices.NAME[{id}]");
+
+        public static string GetOptionsTabLocaleId(string id) => $"Options.TAB[{Id}.{Id}.Mod.{id}]";
+
+        public static string GetOptionsGroupLocaleId(string id) =>
+            $"Options.GROUP[{Id}.{Id}.Mod.{id}]";
+
+        public static string GetOptionsLabelLocaleId(string id) =>
+            $"Options.OPTION[{Id}.{Id}.Mod.Setting.{id}]";
+
+        public static string GetOptionsDescLocaleId(string id) =>
+            $"Options.OPTION_DESCRIPTION[{Id}.{Id}.Mod.Setting.{id}]";
+
+        public static string VanillaLocaleSignValueRemover(
+            string id,
+            string value,
+            string sign = ""
+        )
+        {
+            string translation = Translate(id);
+
+            if (translation.Contains("{SIGN}"))
+                translation = translation.Replace("{SIGN}", sign);
+
+            if (translation.Contains("{VALUE}"))
+                translation = translation.Replace("{VALUE}", value);
+
+            return translation;
         }
 
         public IEnumerable<DictionarySource> GetAvailableLanguages()
         {
             foreach (var item in _locale)
-            {
                 yield return new DictionarySource(item.Key is "" ? "en-US" : item.Key, item.Value);
-            }
         }
 
         public class DictionarySource : IDictionarySource
@@ -117,65 +155,111 @@ namespace StarQ.Shared.Extensions
             public IEnumerable<KeyValuePair<string, string>> ReadEntries(
                 IList<IDictionaryEntryError> errors,
                 Dictionary<string, int> indexCounts
-            )
-            {
-                return _dictionary;
-            }
+            ) => _dictionary;
 
             public void Unload() { }
         }
 
         public static void OnActiveDictionaryChanged()
         {
-            LocalizationManager lm = GameManager.instance.localizationManager;
-            Dictionary<string, string> toUpdate = new();
+            UpdateDictionary();
+            foreach (var item in toUpdate.ToArray())
+            {
+                localizationManager.activeDictionary.Add(item.Key, item.Value);
+                toUpdate.Remove(item.Key);
+            }
+            UpdateDictionary2();
+            foreach (var item in toUpdate.ToArray())
+            {
+                localizationManager.activeDictionary.Add(item.Key, item.Value);
+                toUpdate.Remove(item.Key);
+            }
+        }
+
+        public static void UpdateDictionary()
+        {
+            AddLocalization($"Options.SECTION[{Id}.{Id}.Mod]", ModName);
+            //Dictionary<string, string> toUpdateX = new();
+
+            Dictionary<string, string> commonReplacements = CommonLocale();
+            AddLocale?.Invoke();
+            foreach (var item in commonReplacements)
+                toUpdate[item.Key] = item.Value;
+
+            foreach (var item in replacedStrings)
+                toUpdate[item.Key] = item.Value;
+        }
+
+        public static void UpdateDictionary2()
+        {
+            if (GetReplacements() == null)
+                return;
 
             Dictionary<string, string> replacements = GetReplacements();
 
             Regex regex = new($@"(\{{{Regex.Escape(Id)}\.[\w.]+\}}+)", RegexOptions.Compiled);
+            //Regex regex2 = new(@"^\s*\{VanillaLocale\.(.+?)\}\s*$", RegexOptions.Compiled);
+            var entries = localizationManager.activeDictionary.entries;
 
-            foreach (var item in replacedStrings)
+            foreach (var entry in entries)
             {
-                try
-                {
-                    lm.activeDictionary.Add(item.Key, item.Value);
-                }
-                catch (Exception) { }
-            }
+                //                string newValue; // = entry.Value;
+                //if (entry.Value.Contains("{VanillaLocale."))
+                //{
+                //    LogHelper.SendLog(entry.Key);
+                //    LogHelper.SendLog(entry.Value);
+                //    var vanillaMatch = regex2.Match(entry.Value);
+                //    LogHelper.SendLog(vanillaMatch.Success);
+                //    if (vanillaMatch.Success)
+                //    {
+                //        string vanillaKey = vanillaMatch.Groups[1].Value;
+                //        LogHelper.SendLog(vanillaKey);
+                //        newValue = Translate(vanillaKey);
+                //        LogHelper.SendLog(newValue);
+                //    }
+                //}
+                //else
+                //{
 
-            foreach (var entry in lm.activeDictionary.entries)
-            {
                 if (!entry.Key.Contains(Id))
-                {
                     continue;
-                }
-                string newValue = Expand(entry.Value, lm, replacements, regex);
+
+                if (
+                    !(
+                        entry.Value.Contains($"{Id}.Replacement.")
+                        || (entry.Value.Contains("{") && entry.Value.Contains("}"))
+                    )
+                )
+                    continue;
+
+                //LogHelper.SendLog($"Expand Start: {entry.Value}");
+                string newValue = Expand(entry.Value, replacements, regex);
+
                 if (newValue != entry.Value)
                 {
                     replacedStrings[entry.Key] = entry.Value;
+                    //LogHelper.SendLog($"Expand End: {entry.Value}, {newValue}");
                     toUpdate[entry.Key] = newValue;
                 }
             }
 
-            foreach (var item in toUpdate)
-            {
-                try
-                {
-                    lm.activeDictionary.Add(item.Key, item.Value);
-                }
-                catch (Exception) { }
-            }
+            //foreach (var item in toUpdate)
+            //    localizationManager.activeDictionary.Add(item.Key, item.Value);
+            //{
+            //    //if (!lm.activeDictionary.TryGetValue(item.Key, out var _))
+            //    localizationManager.activeDictionary.Add(item.Key, item.Value);
+            //    //else
+            //    //    LogHelper.SendLog(
+            //    //        $"Trying to add '{item.Key}: {item.Value}' locale when it already exists"
+            //    //    );
+            //}
         }
 
-        static string Expand(
-            string input,
-            LocalizationManager lm,
-            Dictionary<string, string> replacements,
-            Regex regex
-        )
+        static string Expand(string input, Dictionary<string, string> replacements, Regex regex)
         {
             string result = input;
             bool changed;
+            int safety = 0;
 
             do
             {
@@ -184,8 +268,7 @@ namespace StarQ.Shared.Extensions
                     result,
                     match =>
                     {
-                        var key = (match.Groups[1].Value).Replace("{", "").Replace("}", "");
-
+                        var key = match.Groups[1].Value.Trim('{', '}');
                         if (
                             replacements.TryGetValue(
                                 key.Replace($"{Id}.Replacement.", ""),
@@ -197,7 +280,9 @@ namespace StarQ.Shared.Extensions
                             return replacement;
                         }
 
-                        if (lm.activeDictionary.TryGetValue(key, out var localized))
+                        if (
+                            localizationManager.activeDictionary.TryGetValue(key, out var localized)
+                        )
                         {
                             changed = true;
                             return localized;
@@ -206,6 +291,11 @@ namespace StarQ.Shared.Extensions
                         return match.Value;
                     }
                 );
+                if (++safety > 10)
+                {
+                    LogHelper.SendLog($"Expand loop aborted. Key={Id}, input={input}");
+                    break;
+                }
             } while (changed && regex.IsMatch(result));
 
             return result;

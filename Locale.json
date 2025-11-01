@@ -1,0 +1,20 @@
+{
+  "LogTab": "Log",
+  "NameText": "Mod Name",
+  "NameText_Desc": "The name of the mod.",
+  "VersionText": "Mod Version",
+  "VersionText_Desc": "The current version of the mod.",
+  "AuthorText": "Author",
+  "AuthorText_Desc": "The author of the mod.",
+  "BMaCLink_Desc": "Support the author.",
+  "Discord_Desc": "Feedback/Suggestions for the mod in the Cities: Skylines Modding Server.",
+  "OpenLog": "Open Log File",
+  "OpenLog_Desc": "Open the log file in your default <.log> file viewer/editor.",
+  "RestoreToVanilla": "Restore Vanilla Values",
+  "RestoreToVanilla_Desc": "Restore all options to vanilla values.",
+  "ReloadToApply": "Reload save to apply changes.",
+  "ReloadToApply_Desc": "Reload save to apply changes.",
+  "NoLog": "No log entries yet.",
+  "PerXPop": "per {X} population",
+  "NotInGame": "Not in game"
+}

@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using Colossal.Logging;
 using Colossal.PSI.Environment;
-using Game.Modding;
 using Game.UI.Localization;
 
 namespace StarQ.Shared.Extensions
@@ -24,16 +23,16 @@ namespace StarQ.Shared.Extensions
 
     public class LogHelper
     {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public static string Id;
         public static ILog log;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
         public static void Init(string _id, ILog _log)
         {
             Id = _id;
             log = _log;
             logText = $"{Id}.Mod.NoLog";
+
+            SendLog($"Starting {Id} at {DateTime.Now.ToLocalTime()}", LogLevel.DEV);
         }
 
         public static LocalizedString LogText => LocalizedString.Id(logText);
@@ -95,14 +94,10 @@ namespace StarQ.Shared.Extensions
             }
         }
 
-        public static void SendLog(Exception exception, LogLevel level = LogLevel.Info)
-        {
+        public static void SendLog(Exception exception, LogLevel level = LogLevel.Info) =>
             SendLog($"{exception}", level);
-        }
 
-        public static void SendLog(bool boolean, LogLevel level = LogLevel.Info)
-        {
+        public static void SendLog(bool boolean, LogLevel level = LogLevel.Info) =>
             SendLog($"{boolean}", level);
-        }
     }
 }

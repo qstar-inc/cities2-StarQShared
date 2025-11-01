@@ -1,0 +1,20 @@
+{
+  "LogTab": "Logi",
+  "NameText": "Nazwa",
+  "NameText_Desc": "Nazwa moda.",
+  "VersionText": "Wersja",
+  "VersionText_Desc": "Aktualna wersja moda.",
+  "AuthorText": "Autor",
+  "AuthorText_Desc": "Autor moda.",
+  "BMaCLink_Desc": "Wesprzyj autora.",
+  "Discord_Desc": "Opinie/sugestie o modzie na serwerze Cities: Skylines Modding.",
+  "OpenLog": "Otwórz plik logów",
+  "OpenLog_Desc": "Otwórz plik logów w domyślnym edytorze/przeglądarce plików <.log>.",
+  "RestoreToVanilla": "Przywróć domyślne wartości",
+  "RestoreToVanilla_Desc": "Przywróci wszystkie opcje do domyślnych wartości.",
+  "ReloadToApply": "Wczytaj ponownie zapis, aby zastosować zmiany",
+  "ReloadToApply_Desc": "Wczyta ponownie zapis, aby zastosować zmiany.",
+  "NoLog": "Brak wpisów dziennika.",
+  "PerXPop": "na {X} populacji",
+  "NotInGame": "Nie w grze"
+}

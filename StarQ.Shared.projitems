@@ -9,7 +9,25 @@
     <Import_RootNamespace>StarQ.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)extensions\CustomChirpBridge.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\LocaleHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\LocaleHelper_CommonDict.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\LogHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)extensions\MathHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)extensions\ModHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\SettingsHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\UIHostHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)extensions\VariableHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Locale\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)LICENSE.txt" />
+    <Content Include="$(MSBuildThisFileDirectory)Locale.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)LocaleMaker.py" />
+    <None Include="$(MSBuildThisFileDirectory)README.md" />
   </ItemGroup>
 </Project>

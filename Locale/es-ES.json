@@ -1,0 +1,20 @@
+{
+  "LogTab": "Registro",
+  "NameText": "Nombre del Mod",
+  "NameText_Desc": "El nombre del mod.",
+  "VersionText": "Versión del Mod",
+  "VersionText_Desc": "La versión actual del mod.",
+  "AuthorText": "Autor",
+  "AuthorText_Desc": "El autor del mod.",
+  "BMaCLink_Desc": "Apoya al autor del mod.",
+  "Discord_Desc": "Comentarios/Sugerencias para el mod en el servidor Cities: Skylines Modding.",
+  "OpenLog": "Abrir archivo de registro",
+  "OpenLog_Desc": "Abre el archivo de registro <.log> con el editor/visor predeterminado.",
+  "RestoreToVanilla": "Restaurar Valores Vanilla",
+  "RestoreToVanilla_Desc": "Restaurar todas las opciones a los valores Vanilla.",
+  "ReloadToApply": "Recargar partida para aplicar los cambios.",
+  "ReloadToApply_Desc": "Recargar partida para aplicar los cambios.",
+  "NoLog": "Aún no existen registros.",
+  "PerXPop": "por {X} población",
+  "NotInGame": "No está en el juego"
+}
