@@ -1,3 +1,6 @@
+using Colossal.IO.AssetDatabase;
+using Colossal.UI;
+
 namespace StarQ.Shared.Extensions
 {
     public class UIHostHelper
@@ -13,13 +16,46 @@ namespace StarQ.Shared.Extensions
 
         public static string IconHostName => uiHostName ?? null;
 
-        public static string Icon(string iconName)
+        public static string Icon(string iconName, string extension = "svg")
         {
             if (IconHostName == null)
                 return MGI("Placeholder");
-            return $"coui://{IconHostName}/{iconName}";
+            return $"coui://{IconHostName}/{iconName}.{extension}";
         }
 
         public static string MGI(string iconName) => $"Media/Game/Icons/{iconName}.svg";
+
+        public static string DLC(string iconName) => $"Media/DLC/{iconName}.svg";
+
+        public static void LoadUIHost(ExecutableAsset asset)
+        {
+            var uisystem = UIManager.defaultUISystem;
+            var x = AssetDatabase.global.GetAssets<UIHostAsset>().GetEnumerator();
+            while (x.MoveNext())
+            {
+                var uihostAsset = x.Current;
+                if (uihostAsset.path.Contains("Cities2_Data/Content"))
+                    continue;
+
+                if (uihostAsset.path.Contains(asset.path))
+                    if (uihostAsset.scheme == "assetdb")
+                    {
+                        uisystem.AddDatabaseHostLocation(
+                            uihostAsset.hostname,
+                            uihostAsset.uiUri,
+                            uihostAsset.priority
+                        );
+                    }
+                    else
+                    {
+                        uisystem.AddHostLocation(
+                            uihostAsset.hostname,
+                            uihostAsset.uiPath,
+                            true,
+                            uihostAsset.priority
+                        );
+                    }
+            }
+        }
     }
 }
