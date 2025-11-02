@@ -37,6 +37,7 @@ namespace StarQ.Shared.Extensions
 
         public static LocalizedString LogText => LocalizedString.Id(logText);
         private static string logText = "";
+        private static bool logExists = false;
 
         public static void SendLog(string message, LogLevel level = LogLevel.Info)
         {
@@ -80,7 +81,15 @@ namespace StarQ.Shared.Extensions
             }
             try
             {
-                string oglogText = File.ReadAllText($"{EnvPath.kUserDataPath}/Logs/{Id}.log");
+                string filePath = $"{EnvPath.kUserDataPath}/Logs/{Id}.log";
+
+                if (!logExists)
+                    logExists = File.Exists(filePath);
+
+                if (!logExists)
+                    return;
+
+                string oglogText = File.ReadAllText(filePath);
                 logText = Regex.Replace(
                     oglogText,
                     @"^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\] \[[A-Z]+\]\s*",
