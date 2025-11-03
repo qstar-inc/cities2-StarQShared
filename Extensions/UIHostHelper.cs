@@ -37,7 +37,7 @@ namespace StarQ.Shared.Extensions
                 if (uihostAsset.path.Contains("Cities2_Data/Content"))
                     continue;
 
-                if (uihostAsset.path.Contains(asset.path))
+                if (uihostAsset.path.Contains(asset.subPath))
                     if (uihostAsset.scheme == "assetdb")
                     {
                         uisystem.AddDatabaseHostLocation(
