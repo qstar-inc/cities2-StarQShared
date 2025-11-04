@@ -29,11 +29,13 @@ namespace StarQ.Shared.Extensions
 
         public static void LoadUIHost(ExecutableAsset asset)
         {
+            //LogHelper.SendLog(asset.subPath, LogLevel.DEV);
             var uisystem = UIManager.defaultUISystem;
             var x = AssetDatabase.global.GetAssets<UIHostAsset>().GetEnumerator();
             while (x.MoveNext())
             {
                 var uihostAsset = x.Current;
+                //LogHelper.SendLog(uihostAsset.path, LogLevel.DEV);
                 if (uihostAsset.path.Contains("Cities2_Data/Content"))
                     continue;
 
@@ -45,6 +47,7 @@ namespace StarQ.Shared.Extensions
                             uihostAsset.uiUri,
                             uihostAsset.priority
                         );
+                        //LogHelper.SendLog("AddDatabaseHostLocation", LogLevel.DEV);
                     }
                     else
                     {
@@ -54,6 +57,7 @@ namespace StarQ.Shared.Extensions
                             true,
                             uihostAsset.priority
                         );
+                        //LogHelper.SendLog("AddHostLocation", LogLevel.DEV);
                     }
             }
         }

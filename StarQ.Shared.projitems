@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)extensions\CustomChirpBridge.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)extensions\HashMapHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\LocaleHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\LocaleHelper_CommonDict.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\LogHelper.cs" />
@@ -18,6 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SettingsHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\UIHostHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)extensions\VariableHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)extensions\WorldHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Locale\" />
