@@ -108,5 +108,11 @@ namespace StarQ.Shared.Extensions
 
         public static void SendLog(bool boolean, LogLevel level = LogLevel.Info) =>
             SendLog($"{boolean}", level);
+
+        public static void SendLog(int integer, LogLevel level = LogLevel.Info) =>
+            SendLog($"{integer}", level);
+
+        public static void SendLog(float floatN, LogLevel level = LogLevel.Info) =>
+            SendLog($"{floatN}", level);
     }
 }
