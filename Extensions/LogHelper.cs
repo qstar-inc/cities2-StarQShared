@@ -25,12 +25,14 @@ namespace StarQ.Shared.Extensions
     {
         public static string Id;
         public static ILog log;
+        public static string logPath;
 
         public static void Init(string _id, ILog _log)
         {
             Id = _id;
             log = _log;
             logText = $"{Id}.Mod.NoLog";
+            logPath = $"{EnvPath.kUserDataPath}/Logs/{Id}.log";
 
             SendLog($"Starting {Id} at {DateTime.Now.ToLocalTime()}", LogLevel.DEV);
         }
@@ -81,15 +83,13 @@ namespace StarQ.Shared.Extensions
             }
             try
             {
-                string filePath = $"{EnvPath.kUserDataPath}/Logs/{Id}.log";
-
                 if (!logExists)
-                    logExists = File.Exists(filePath);
+                    logExists = File.Exists(logPath);
 
                 if (!logExists)
                     return;
 
-                string oglogText = File.ReadAllText(filePath);
+                string oglogText = File.ReadAllText(logPath);
                 logText = Regex.Replace(
                     oglogText,
                     @"^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\] \[[A-Z]+\]\s*",
