@@ -19,6 +19,7 @@ namespace StarQ.Shared.Extensions
         Fatal,
         Emergency,
         DEV,
+        DEVD,
     }
 
     public class LogHelper
@@ -75,6 +76,13 @@ namespace StarQ.Shared.Extensions
                 case LogLevel.DEV:
 #if DEBUG
                     log.Info(message);
+#endif
+                    break;
+                case LogLevel.DEVD:
+#if DEBUG
+                    log.Info(message);
+#else
+                    log.Debug(message);
 #endif
                     break;
                 default:

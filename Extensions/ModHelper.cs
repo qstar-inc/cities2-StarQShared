@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Colossal.IO.AssetDatabase;
 using Game.SceneFlow;
 
 namespace StarQ.Shared.Extensions
@@ -17,6 +18,22 @@ namespace StarQ.Shared.Extensions
                     return true;
 
             return false;
+        }
+
+        public static bool AddAfterActivePlaysetOrModStatusChanged(Action func)
+        {
+            try
+            {
+                var db = AssetDatabase<ParadoxMods>.instance;
+                var ds = (ParadoxModsDataSource)db.dataSource;
+                ds.onAfterActivePlaysetOrModStatusChanged += func;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.SendLog(ex, LogLevel.Error);
+                return false;
+            }
         }
     }
 }
