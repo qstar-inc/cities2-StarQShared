@@ -1,6 +1,8 @@
+using Game;
 using Game.Common;
 using Game.Notifications;
 using Game.Prefabs;
+using Game.SceneFlow;
 using Game.UI;
 using Game.UI.InGame;
 using Unity.Entities;
@@ -25,5 +27,9 @@ namespace StarQ.Shared.Extensions
         public static T GetSystem<T>()
             where T : SystemBase =>
             World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<T>();
+
+        public static bool IsGame => GameManager.instance.gameMode.IsGame();
+        public static bool IsEditor => GameManager.instance.gameMode.IsEditor();
+        public static bool IsGameOrEditor => GameManager.instance.gameMode.IsGameOrEditor();
     }
 }

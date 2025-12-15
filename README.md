@@ -15,6 +15,14 @@
   <Import Project="..\..\ModsPersonal\StarQ.Shared\StarQ.Shared.projitems" Label="Shared" />
 ```
 ```
+    <Reference Include="Colossal.AssetPipeline">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Colossal.PSI.Common">
+      <Private>false</Private>
+    </Reference>
+```
+```
   <ItemGroup>
     <None Include="$(ModPropsFile)" Link="Properties\Mod.props" />
     <None Include="$(ModTargetsFile)" Link="Properties\Mod.targets" />
