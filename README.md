@@ -21,12 +21,25 @@
     <Reference Include="Colossal.PSI.Common">
       <Private>false</Private>
     </Reference>
+    <Reference Include="Colossal.Mathematics">
+      <Private>false</Private>
+    </Reference>
 ```
 ```
   <ItemGroup>
     <None Include="$(ModPropsFile)" Link="Properties\Mod.props" />
     <None Include="$(ModTargetsFile)" Link="Properties\Mod.targets" />
   </ItemGroup>
+  <Target Name="RunPythonPreBuild"
+    BeforeTargets="BeforeBuild"
+    Condition="Exists('$(ProjectDir)LocalizationSource')"
+  >
+    <Message Text="Running Python lang processor..." Importance="high" />
+    <Exec
+      Command="python &quot;D:\_Q\Codes\CS2 Processors\lang\create_loc_batch.py&quot;"
+      WorkingDirectory="$(ProjectDir)LocalizationSource"
+    />
+  </Target>
   <Target Name="GetAdditionalFiles" AfterTargets="DeployWIP">
     <ItemGroup>
       <AdditionalFilesToDeploy Include="Resources\**\*.*" />
@@ -35,7 +48,16 @@
       SourceFiles="@(AdditionalFilesToDeploy)"
       DestinationFiles="@(AdditionalFilesToDeploy-&gt;'$(DeployDir)\%(RecursiveDir)%(Filename)%(Extension)')"
     />
+  </Target> 
+```
+* If there is UI,
+```
+  <Target Name="BuildUI" AfterTargets="AfterBuild">
+    <Exec Command="npm run build" WorkingDirectory="$(ProjectDir)/UI" />
   </Target>
+```
+* For old lang systems,
+```
   <ItemGroup>
     <EmbeddedResource Include="Locale.json" />
     <EmbeddedResource Include="Locale\*.json" />
@@ -76,7 +98,7 @@
 ```
 * If there is UIHost,
 ```
-        public static string uiHostName = "starq-asset-ui-manager";
+        public static string uiHostName = "starq-xxxxxxx";
 ```
 ```
             LocaleHelper.Init(Id, Name, GetReplacements);

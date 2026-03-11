@@ -106,16 +106,33 @@ namespace StarQ.Shared.Extensions
 
         public static string GetSubserviceName(string id) => Translate($"SubServices.NAME[{id}]");
 
-        public static string GetOptionsTabLocaleId(string id) => $"Options.TAB[{Id}.{Id}.Mod.{id}]";
+        public static string GetOptionsTabLocaleId(string id, string modId = "modId")
+        {
+            if (modId == "modId")
+                modId = Id;
+            return $"Options.TAB[{modId}.{modId}.Mod.{id}]";
+        }
 
-        public static string GetOptionsGroupLocaleId(string id) =>
-            $"Options.GROUP[{Id}.{Id}.Mod.{id}]";
+        public static string GetOptionsGroupLocaleId(string id, string modId = "modId")
+        {
+            if (modId == "modId")
+                modId = Id;
+            return $"Options.GROUP[{modId}.{modId}.Mod.{id}]";
+        }
 
-        public static string GetOptionsLabelLocaleId(string id) =>
-            $"Options.OPTION[{Id}.{Id}.Mod.Setting.{id}]";
+        public static string GetOptionsLabelLocaleId(string id, string modId = "modId")
+        {
+            if (modId == "modId")
+                modId = Id;
+            return $"Options.OPTION[{modId}.{modId}.Mod.Setting.{id}]";
+        }
 
-        public static string GetOptionsDescLocaleId(string id) =>
-            $"Options.OPTION_DESCRIPTION[{Id}.{Id}.Mod.Setting.{id}]";
+        public static string GetOptionsDescLocaleId(string id, string modId = "modId")
+        {
+            if (modId == "modId")
+                modId = Id;
+            return $"Options.OPTION_DESCRIPTION[{modId}.{modId}.Mod.Setting.{id}]";
+        }
 
         public static string VanillaLocaleSignValueRemover(
             string id,
@@ -192,35 +209,16 @@ namespace StarQ.Shared.Extensions
 
         public static void UpdateDictionary2()
         {
-            if (GetReplacements() == null)
+            if (GetReplacements == null)
                 return;
 
             Dictionary<string, string> replacements = GetReplacements();
 
             Regex regex = new($@"(\{{{Regex.Escape(Id)}\.[\w.]+\}}+)", RegexOptions.Compiled);
-            //Regex regex2 = new(@"^\s*\{VanillaLocale\.(.+?)\}\s*$", RegexOptions.Compiled);
             var entries = localizationManager.activeDictionary.entries;
 
             foreach (var entry in entries)
             {
-                //                string newValue; // = entry.Value;
-                //if (entry.Value.Contains("{VanillaLocale."))
-                //{
-                //    LogHelper.SendLog(entry.Key);
-                //    LogHelper.SendLog(entry.Value);
-                //    var vanillaMatch = regex2.Match(entry.Value);
-                //    LogHelper.SendLog(vanillaMatch.Success);
-                //    if (vanillaMatch.Success)
-                //    {
-                //        string vanillaKey = vanillaMatch.Groups[1].Value;
-                //        LogHelper.SendLog(vanillaKey);
-                //        newValue = Translate(vanillaKey);
-                //        LogHelper.SendLog(newValue);
-                //    }
-                //}
-                //else
-                //{
-
                 if (!entry.Key.Contains(Id))
                     continue;
 
@@ -232,7 +230,6 @@ namespace StarQ.Shared.Extensions
                 )
                     continue;
 
-                //LogHelper.SendLog($"Expand Start: {entry.Value}");
                 string newValue = Expand(entry.Value, replacements, regex);
 
                 if (newValue != entry.Value)
@@ -242,17 +239,6 @@ namespace StarQ.Shared.Extensions
                     toUpdate[entry.Key] = newValue;
                 }
             }
-
-            //foreach (var item in toUpdate)
-            //    localizationManager.activeDictionary.Add(item.Key, item.Value);
-            //{
-            //    //if (!lm.activeDictionary.TryGetValue(item.Key, out var _))
-            //    localizationManager.activeDictionary.Add(item.Key, item.Value);
-            //    //else
-            //    //    LogHelper.SendLog(
-            //    //        $"Trying to add '{item.Key}: {item.Value}' locale when it already exists"
-            //    //    );
-            //}
         }
 
         static string Expand(string input, Dictionary<string, string> replacements, Regex regex)

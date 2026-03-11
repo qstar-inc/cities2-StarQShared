@@ -3,6 +3,7 @@ using Game.Common;
 using Game.Notifications;
 using Game.Prefabs;
 using Game.SceneFlow;
+using Game.Tools;
 using Game.UI;
 using Game.UI.InGame;
 using Unity.Entities;
@@ -22,6 +23,7 @@ namespace StarQ.Shared.Extensions
             GetSystem<ModificationEndBarrier>();
         public static NameSystem NameSystem => GetSystem<NameSystem>();
         public static PrefabSystem PrefabSystem => GetSystem<PrefabSystem>();
+        public static ToolSystem ToolSystem => GetSystem<ToolSystem>();
         public static PrefabUISystem PrefabUISystem => GetSystem<PrefabUISystem>();
 
         public static T GetSystem<T>()

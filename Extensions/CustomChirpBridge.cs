@@ -99,13 +99,13 @@ namespace StarQ.Shared.Extensions
 
         private static PrefabBase TryGetPrefabBase(Entity prefabEntity)
         {
-            if (prefabEntity == Entity.Null)
-                return null;
             var world = World.DefaultGameObjectInjectionWorld;
             if (world == null)
                 return null;
 
             var em = world.EntityManager;
+            if (!em.Exists(prefabEntity))
+                return null;
             if (!em.HasComponent<PrefabData>(prefabEntity))
                 return null;
 
