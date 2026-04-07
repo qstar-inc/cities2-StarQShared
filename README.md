@@ -131,8 +131,9 @@
         public const string InfoGroup = "InfoGroup";
 
         public const string LogTab = "LogTab";
-```
-```
+
+        public override void SetDefaults() { }
+
         [SettingsUISection(AboutTab, InfoGroup)]
         public string NameText => Mod.Name;
 

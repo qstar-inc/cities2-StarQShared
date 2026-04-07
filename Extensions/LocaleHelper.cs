@@ -219,24 +219,31 @@ namespace StarQ.Shared.Extensions
 
             foreach (var entry in entries)
             {
-                if (!entry.Key.Contains(Id))
-                    continue;
-
-                if (
-                    !(
-                        entry.Value.Contains($"{Id}.Replacement.")
-                        || (entry.Value.Contains("{") && entry.Value.Contains("}"))
-                    )
-                )
-                    continue;
-
-                string newValue = Expand(entry.Value, replacements, regex);
-
-                if (newValue != entry.Value)
+                try
                 {
-                    replacedStrings[entry.Key] = entry.Value;
-                    //LogHelper.SendLog($"Expand End: {entry.Value}, {newValue}");
-                    toUpdate[entry.Key] = newValue;
+                    if (!entry.Key.Contains(Id))
+                        continue;
+
+                    if (
+                        !(
+                            entry.Value.Contains($"{Id}.Replacement.")
+                            || (entry.Value.Contains("{") && entry.Value.Contains("}"))
+                        )
+                    )
+                        continue;
+
+                    string newValue = Expand(entry.Value, replacements, regex);
+
+                    if (newValue != entry.Value)
+                    {
+                        replacedStrings[entry.Key] = entry.Value;
+                        //LogHelper.SendLog($"Expand End: {entry.Value}, {newValue}");
+                        toUpdate[entry.Key] = newValue;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.SendLog(ex);
                 }
             }
         }
