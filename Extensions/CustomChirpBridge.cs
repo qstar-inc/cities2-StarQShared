@@ -99,13 +99,13 @@ namespace StarQ.Shared.Extensions
 
         private static PrefabBase TryGetPrefabBase(Entity prefabEntity)
         {
+            if (prefabEntity == Entity.Null)
+                return null;
             var world = World.DefaultGameObjectInjectionWorld;
             if (world == null)
                 return null;
 
             var em = world.EntityManager;
-            if (!em.Exists(prefabEntity))
-                return null;
             if (!em.HasComponent<PrefabData>(prefabEntity))
                 return null;
 
@@ -123,6 +123,8 @@ namespace StarQ.Shared.Extensions
         {
             if (_resolved)
                 return;
+            _resolved = true;
+
             // Find API & enum types (by FQN first, then scan loaded assemblies)
             _apiType =
                 Type.GetType("CustomChirps.Systems.CustomChirpApiSystem, CustomChirps")
@@ -137,7 +139,6 @@ namespace StarQ.Shared.Extensions
                     "PostChirp",
                     BindingFlags.Public | BindingFlags.Static
                 );
-                _resolved = true;
             }
         }
 
