@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Colossal.Entities;
 using Colossal.IO.AssetDatabase;
 using Game;
 using Game.Prefabs;
@@ -35,6 +36,18 @@ namespace StarQ.Shared.Extensions
             )
                 return false;
             return true;
+        }
+
+        public static bool TryFindPrefabRef(Entity entity, out Entity prefabRef)
+        {
+            prefabRef = Entity.Null;
+
+            if (WorldHelper.EntityManager.TryGetComponent(entity, out PrefabRef prefabRefData))
+            {
+                prefabRef = prefabRefData.m_Prefab;
+                return true;
+            }
+            return false;
         }
     }
 }
