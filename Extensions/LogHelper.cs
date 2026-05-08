@@ -22,97 +22,119 @@ namespace StarQ.Shared.Extensions
         DEVD,
     }
 
-    public class LogHelper
+    public static class LogHelper
     {
-        public static string Id;
-        public static ILog log;
-        public static string logPath;
+        private static string _id = "Unknown";
+        private static ILog _log;
+        private static string _logPath;
 
-        public static void Init(string _id, ILog _log)
+        private static string _logText = "";
+        private static DateTime _lastReadTime = DateTime.MinValue;
+
+        private static readonly Regex PrefixRegex = new(
+            @"^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\] \[[A-Z]+\]\s*",
+            RegexOptions.Multiline | RegexOptions.Compiled
+        );
+
+        public static LocalizedString LogText => LocalizedString.Id(_logText);
+
+        public static void Init(string id, ILog log)
         {
-            Id = _id;
-            log = _log;
-            logText = $"{Id}.Mod.NoLog";
-            logPath = $"{EnvPath.kUserDataPath}/Logs/{Id}.log";
+            _id = id;
+            _log = log;
+            _logPath = Path.Combine(EnvPath.kUserDataPath, "Logs", $"{_id}.log");
 
-            SendLog($"Starting {Id} at {DateTime.Now.ToLocalTime()}", LogLevel.DEV);
+            _logText = $"{_id}.Mod.NoLog";
+
+            UpdateLogText();
+            SendLog($"Starting {_id} at {DateTime.Now}", LogLevel.DEV);
         }
-
-        public static LocalizedString LogText => LocalizedString.Id(logText);
-        private static string logText = "";
-        private static bool logExists = false;
 
         public static void SendLog(string message, LogLevel level = LogLevel.Info)
         {
+            if (_log == null)
+                return;
+
+            string text = message ?? "null";
+
             switch (level)
             {
                 case LogLevel.Verbose:
-                    log.Verbose(message);
+                    _log.Verbose(text);
                     break;
                 case LogLevel.Trace:
-                    log.Trace(message);
+                    _log.Trace(text);
                     break;
                 case LogLevel.Debug:
-                    log.Debug(message);
+                    _log.Debug(text);
                     break;
                 case LogLevel.Info:
-                    log.Info(message);
+                    _log.Info(text);
                     break;
                 case LogLevel.Warn:
-                    log.Warn(message);
+                    _log.Warn(text);
                     break;
                 case LogLevel.Error:
-                    log.Error(message);
+                    _log.Error(text);
                     break;
                 case LogLevel.Critical:
-                    log.Critical(message);
+                    _log.Critical(text);
                     break;
                 case LogLevel.Fatal:
-                    log.Fatal(message);
+                    _log.Fatal(text);
                     break;
                 case LogLevel.Emergency:
-                    log.Emergency(message);
+                    _log.Emergency(text);
                     break;
                 case LogLevel.DEV:
 #if DEBUG
-                    log.Info(message);
-#endif
+                    _log.Info(text);
                     break;
+#else
+                    return;
+#endif
                 case LogLevel.DEVD:
 #if DEBUG
-                    log.Info(message);
+                    _log.Info(text);
 #else
-                    log.Debug(message);
+                    _log.Debug(text);
 #endif
                     break;
                 default:
-                    log.Info(message);
+                    _log.Info(text);
                     break;
             }
+
+            UpdateLogText();
+        }
+
+        private static void UpdateLogText()
+        {
             try
             {
-                if (!logExists)
-                    logExists = File.Exists(logPath);
-
-                if (!logExists)
+                if (!File.Exists(_logPath))
                     return;
 
-                string oglogText = File.ReadAllText(logPath);
-                logText = Regex.Replace(
-                    oglogText,
-                    @"^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\] \[[A-Z]+\]\s*",
-                    "",
-                    RegexOptions.Multiline
-                );
+                DateTime writeTime = File.GetLastWriteTimeUtc(_logPath);
+
+                if (writeTime <= _lastReadTime)
+                    return;
+
+                _lastReadTime = writeTime;
+
+                string original = File.ReadAllText(_logPath);
+
+                _logText = PrefixRegex.Replace(original, "");
             }
             catch (Exception e)
             {
-                log.Info(e);
+                try
+                {
+                    _log?.Error(e);
+                }
+                catch { }
             }
         }
-
-        public static void SendLog(Exception exception, LogLevel level = LogLevel.Info) =>
-            SendLog($"{exception}", level);
 
         public static void SendLog(bool boolean, LogLevel level = LogLevel.Info) =>
             SendLog($"{boolean}", level);
@@ -122,5 +144,16 @@ namespace StarQ.Shared.Extensions
 
         public static void SendLog(float floatN, LogLevel level = LogLevel.Info) =>
             SendLog($"{floatN}", level);
+
+        public static void SendLog(Exception exception, LogLevel level = LogLevel.Info)
+        {
+            if (exception is NullReferenceException)
+            {
+                SendLog("NullReferenceException: " + exception.Message, LogLevel.Error);
+                return;
+            }
+
+            SendLog(exception.ToString(), level);
+        }
     }
 }
