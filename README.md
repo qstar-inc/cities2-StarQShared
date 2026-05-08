@@ -54,7 +54,24 @@
       SourceFiles="@(AdditionalFilesToDeploy)"
       DestinationFiles="@(AdditionalFilesToDeploy-&gt;'$(DeployDir)\%(RecursiveDir)%(Filename)%(Extension)')"
     />
-  </Target> 
+  </Target>
+  <Target Name="SetupAttributes" BeforeTargets="BeforeBuild">
+    <XmlPoke
+      XmlInputPath="$(PublishConfigurationPath)"
+      Value="$([System.IO.File]::ReadAllText(Properties/LongDescription.md))"
+      Query="//LongDescription"
+    />
+    <XmlPoke
+      XmlInputPath="$(PublishConfigurationPath)"
+      Value="$([System.IO.File]::ReadAllText(Properties/ChangeLog.md))"
+      Query="//ChangeLog"
+    />
+    <XmlPoke
+      XmlInputPath="$(PublishConfigurationPath)"
+      Value="$(Version)"
+      Query="//ModVersion/@Value"
+    />
+  </Target>
 ```
 * If there is UI,
 ```
