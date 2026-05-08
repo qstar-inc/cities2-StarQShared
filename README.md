@@ -18,10 +18,16 @@
     <Reference Include="Colossal.AssetPipeline">
       <Private>false</Private>
     </Reference>
+    <Reference Include="Colossal.Mathematics">
+      <Private>false</Private>
+    </Reference>
     <Reference Include="Colossal.PSI.Common">
       <Private>false</Private>
     </Reference>
-    <Reference Include="Colossal.Mathematics">
+    <Reference Include="Colossal.PSI.PdxSdk">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="PDX.SDK">
       <Private>false</Private>
     </Reference>
 ```
