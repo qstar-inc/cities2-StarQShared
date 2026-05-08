@@ -1,3 +1,4 @@
+using System;
 using Colossal.IO.AssetDatabase;
 using Colossal.UI;
 
@@ -34,31 +35,45 @@ namespace StarQ.Shared.Extensions
             var x = AssetDatabase.global.GetAssets<UIHostAsset>().GetEnumerator();
             while (x.MoveNext())
             {
-                var uihostAsset = x.Current;
-                //LogHelper.SendLog(uihostAsset.path, LogLevel.DEV);
-                if (uihostAsset.path.Contains("Cities2_Data/Content"))
-                    continue;
+                try
+                {
+                    var uihostAsset = x.Current;
+                    //LogHelper.SendLog(uihostAsset.path, LogLevel.DEV);
 
-                if (uihostAsset.path.Contains(asset.subPath))
-                    if (uihostAsset.scheme == "assetdb")
-                    {
-                        uisystem.AddDatabaseHostLocation(
-                            uihostAsset.hostname,
-                            uihostAsset.uiUri,
-                            uihostAsset.priority
-                        );
-                        //LogHelper.SendLog("AddDatabaseHostLocation", LogLevel.DEV);
-                    }
-                    else
-                    {
-                        uisystem.AddHostLocation(
-                            uihostAsset.hostname,
-                            uihostAsset.uiPath,
-                            true,
-                            uihostAsset.priority
-                        );
-                        //LogHelper.SendLog("AddHostLocation", LogLevel.DEV);
-                    }
+                    if (string.IsNullOrEmpty(uihostAsset.path))
+                        continue;
+
+                    if (uihostAsset.path.Contains("Cities2_Data/Content"))
+                        continue;
+
+                    if (string.IsNullOrEmpty(asset.subPath))
+                        continue;
+
+                    if (uihostAsset.path.Contains(asset.subPath))
+                        if (uihostAsset.scheme == "assetdb")
+                        {
+                            uisystem.AddDatabaseHostLocation(
+                                uihostAsset.hostname,
+                                uihostAsset.uiUri,
+                                uihostAsset.priority
+                            );
+                            //LogHelper.SendLog("AddDatabaseHostLocation", LogLevel.DEV);
+                        }
+                        else
+                        {
+                            uisystem.AddHostLocation(
+                                uihostAsset.hostname,
+                                uihostAsset.uiPath,
+                                true,
+                                uihostAsset.priority
+                            );
+                            //LogHelper.SendLog("AddHostLocation", LogLevel.DEV);
+                        }
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.SendLog($"Error loading UIHost: {ex.Message}", LogLevel.Error);
+                }
             }
         }
     }
