@@ -47,7 +47,7 @@ namespace StarQ.Shared.Extensions
 #endif
         }
 
-        private readonly Dictionary<string, Dictionary<string, string>> _locale;
+        //private readonly Dictionary<string, Dictionary<string, string>> _locale;
         private static readonly Dictionary<string, string> replacedStrings = new();
 
         //public LocaleHelper(string dictionaryResourceName)

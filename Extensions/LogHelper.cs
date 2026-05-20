@@ -1,6 +1,8 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Colossal.Logging;
 using Colossal.PSI.Environment;
 using Game.UI.Localization;
@@ -136,6 +138,8 @@ namespace StarQ.Shared.Extensions
             }
         }
 
+        public static void OpenLogFile() => Task.Run(() => Process.Start(_logPath));
+
         public static void SendLog(bool boolean, LogLevel level = LogLevel.Info) =>
             SendLog($"{boolean}", level);
 
@@ -150,10 +154,26 @@ namespace StarQ.Shared.Extensions
             if (exception is NullReferenceException)
             {
                 SendLog("NullReferenceException: " + exception.Message, LogLevel.Error);
+                SendLog(exception.StackTrace ?? "No stack trace available", LogLevel.Info);
                 return;
             }
 
             SendLog(exception.ToString(), level);
+        }
+
+        public static bool CheckNull(
+            Object obj,
+            string text,
+            string reason = "IDK how...",
+            LogLevel level = LogLevel.Error
+        )
+        {
+            if (obj == null)
+            {
+                SendLog($"{text} is null. {reason}", level);
+                return true;
+            }
+            return false;
         }
     }
 }
