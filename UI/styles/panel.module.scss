@@ -1,0 +1,122 @@
+.Container {
+  position: relative;
+  overflow: hidden;
+}
+
+.View {
+  width: 100%;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: scroll;
+
+  :global(.info-button_n9m) {
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  :global(.right_ZUb.label_qsp.label_GFm.undefined) {
+    text-align: right;
+    width: 100%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .Strikethrough {
+    text-decoration: line-through;
+    text-decoration-color: whitesmoke;
+    text-decoration-thickness: 3rem;
+  }
+
+  .FullRow {
+    margin: auto 0 !important;
+  }
+}
+
+.ViewList,
+.ViewDetail {
+  position: relative;
+}
+
+.ViewListActive .ViewList {
+  transform: translateX(0%);
+}
+.ViewListActive .ViewDetail {
+  transform: translateX(100%);
+}
+
+.ViewDetailActive .ViewList {
+  transform: translateX(-100%);
+}
+.ViewDetailActive .ViewDetail {
+  transform: translateX(0%);
+}
+
+.ViewDetailActive .ViewDetail {
+  position: relative;
+}
+
+.ViewDetailActive .ViewList {
+  position: relative;
+  top: 0;
+  left: 0;
+}
+
+.Panel {
+  position: absolute;
+  overflow: hidden;
+  transform: scale(0.9);
+  opacity: 0.5;
+  max-height: 70vh;
+  width: calc(400rem * (0.33333 + var(--fontScale) / 1.5));
+}
+
+.Panel.dragging {
+  right: auto;
+  left: 0;
+  top: 0;
+}
+
+.AnimateIn {
+  animation: animateIn 0.15s ease-in forwards;
+  transform-origin: top center;
+  transition-property: all;
+}
+
+// .AnimateOut {
+//   animation: animateOut 0.05s ease-in forwards;
+//   transform-origin: center center;
+//   transition-property: all;
+// }
+
+@keyframes animateIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// @keyframes animateOut {
+//   from {
+//     transform: scale(1);
+//     opacity: 1;
+//   }
+//   to {
+//     transform: scale(0.95);
+//     opacity: 0;
+//     display: none;
+//   }
+// }
+
+.PanelHeaderIcon {
+  position: absolute;
+  top: 8rem;
+  left: 10rem;
+  margin: 0;
+}
+
+.PanelHeaderDiv {
+  min-height: 0 !important;
+}

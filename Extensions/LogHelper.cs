@@ -52,6 +52,8 @@ namespace StarQ.Shared.Extensions
             SendLog($"Starting {_id} at {DateTime.Now}", LogLevel.DEV);
         }
 
+        public static string GetId() => _id;
+
         public static void SendLog(string message, LogLevel level = LogLevel.Info)
         {
             if (_log == null)
@@ -128,38 +130,33 @@ namespace StarQ.Shared.Extensions
 
                 _logText = PrefixRegex.Replace(original, "");
             }
-            catch (Exception e)
+            catch (Exception) { }
+        }
+
+        public static void OpenLogFile() =>
+            Task.Run(() =>
             {
                 try
                 {
-                    _log?.Error(e);
+                    Process.Start(_logPath);
                 }
-                catch { }
-            }
-        }
-
-        public static void OpenLogFile() => Task.Run(() => Process.Start(_logPath));
+                catch (Exception ex)
+                {
+                    SendLog(ex);
+                }
+            });
 
         public static void SendLog(bool boolean, LogLevel level = LogLevel.Info) =>
-            SendLog($"{boolean}", level);
+            SendLog(boolean.ToString(), level);
 
         public static void SendLog(int integer, LogLevel level = LogLevel.Info) =>
-            SendLog($"{integer}", level);
+            SendLog(integer.ToString(), level);
 
         public static void SendLog(float floatN, LogLevel level = LogLevel.Info) =>
-            SendLog($"{floatN}", level);
+            SendLog(floatN.ToString(), level);
 
-        public static void SendLog(Exception exception, LogLevel level = LogLevel.Info)
-        {
-            if (exception is NullReferenceException)
-            {
-                SendLog("NullReferenceException: " + exception.Message, LogLevel.Error);
-                SendLog(exception.StackTrace ?? "No stack trace available", LogLevel.Info);
-                return;
-            }
-
+        public static void SendLog(Exception exception, LogLevel level = LogLevel.Error) =>
             SendLog(exception.ToString(), level);
-        }
 
         public static bool CheckNull(
             Object obj,

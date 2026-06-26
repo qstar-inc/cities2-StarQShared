@@ -9,7 +9,6 @@ using Colossal.PSI.PdxSdk;
 using Game.SceneFlow;
 using PDX.SDK.Contracts;
 using PDX.SDK.Contracts.Service.Mods.Models;
-using TinyJson;
 
 namespace StarQ.Shared.Extensions
 {
@@ -64,11 +63,9 @@ namespace StarQ.Shared.Extensions
             if (context == null)
                 return Array.Empty<string>();
 
-            PDX.SDK.Contracts.Service.Mods.Results.IModRootsResult x = context
-                .Mods.LocalFiles.GetModSourcesRootFolders()
-                .ConfigureAwait(false)
-                .GetAwaiter()
-                .GetResult();
+            PDX.SDK.Contracts.Service.Mods.Results.IModRootsResult x =
+                context.Mods.LocalFiles.GetModSourcesRootPaths();
+
             if (!x.Success)
                 return Array.Empty<string>();
 

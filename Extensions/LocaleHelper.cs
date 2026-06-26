@@ -1,13 +1,11 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Colossal;
 using Colossal.Localization;
-using Game.PSI;
 using Game.SceneFlow;
-using Game.UI.Menu;
 
 namespace StarQ.Shared.Extensions
 {
@@ -34,7 +32,7 @@ namespace StarQ.Shared.Extensions
             ModName = modName;
             GetReplacements = getReplacements;
             AddLocale = addLocale;
-            regex = new($@"(\{{{Regex.Escape(Id)}\.[\w.]+\}}+)", RegexOptions.Compiled);
+            regex = new($@"(\{{{Regex.Escape(Id)}\.[\w.]+\}})", RegexOptions.Compiled);
             localizationManager = GameManager.instance.localizationManager;
             localizationManager.onActiveDictionaryChanged += OnActiveDictionaryChanged;
             OnActiveDictionaryChanged();
@@ -43,12 +41,18 @@ namespace StarQ.Shared.Extensions
 
             LogHelper.SendLog("Initing LocaleHelper", LogLevel.DEV);
 #if DEBUG
-            NotificationSystem.Push($"init-debug-{Id}", ModName, $"DEV build running");
+            Game.PSI.NotificationSystem.Push($"init-debug-{Id}", ModName, $"DEV build running");
 #endif
         }
 
+        public static void Dispose()
+        {
+            localizationManager.onActiveDictionaryChanged -= OnActiveDictionaryChanged;
+        }
+
         //private readonly Dictionary<string, Dictionary<string, string>> _locale;
-        private static readonly Dictionary<string, string> replacedStrings = new();
+
+        private static readonly ConcurrentDictionary<string, string> replacedStrings = new();
 
         //public LocaleHelper(string dictionaryResourceName)
         //{
@@ -100,7 +104,7 @@ namespace StarQ.Shared.Extensions
 
         public static string Translate(string id, string fallback = null)
         {
-            if (localizationManager.activeDictionary.TryGetValue(id, out var result))
+            if (localizationManager?.activeDictionary?.TryGetValue(id, out string result) == true)
                 return result;
             if (fallback != null)
                 return fallback;
@@ -134,11 +138,9 @@ namespace StarQ.Shared.Extensions
                 {
                     localizationManager.activeDictionary.Add(item.Key, item.Value);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    LogHelper.SendLog(
-                        $"{item.Key}: {item.Value} already exists in the active dictionary."
-                    );
+                    LogHelper.SendLog($"Failed to add locale {item.Key}: {ex}", LogLevel.Error);
                 }
             }
         }
@@ -147,31 +149,27 @@ namespace StarQ.Shared.Extensions
 
         public static string GetSubserviceName(string id) => Translate($"SubServices.NAME[{id}]");
 
-        public static string GetOptionsTabLocaleId(string id, string modId = "null")
+        public static string GetOptionsTabLocaleId(string id, string modId = null)
         {
-            if (modId == "null")
-                modId = Id;
+            modId ??= Id;
             return $"Options.TAB[{modId}.{modId}.Mod.{id}]";
         }
 
-        public static string GetOptionsGroupLocaleId(string id, string modId = "null")
+        public static string GetOptionsGroupLocaleId(string id, string modId = null)
         {
-            if (modId == "null")
-                modId = Id;
+            modId ??= Id;
             return $"Options.GROUP[{modId}.{modId}.Mod.{id}]";
         }
 
-        public static string GetOptionsLabelLocaleId(string id, string modId = "null")
+        public static string GetOptionsLabelLocaleId(string id, string modId = null)
         {
-            if (modId == "null")
-                modId = Id;
+            modId ??= Id;
             return $"Options.OPTION[{modId}.{modId}.Mod.Setting.{id}]";
         }
 
-        public static string GetOptionsDescLocaleId(string id, string modId = "null")
+        public static string GetOptionsDescLocaleId(string id, string modId = null)
         {
-            if (modId == "null")
-                modId = Id;
+            modId ??= Id;
             return $"Options.OPTION_DESCRIPTION[{modId}.{modId}.Mod.Setting.{id}]";
         }
 
@@ -235,10 +233,10 @@ namespace StarQ.Shared.Extensions
             Dictionary<string, string> commonReplacements = CommonLocale();
             AddLocale?.Invoke();
             foreach (var item in commonReplacements)
-                toUpdate[item.Key] = item.Value;
+                AddLocalization(item.Key, item.Value);
 
             foreach (var item in replacedStrings)
-                toUpdate[item.Key] = item.Value;
+                AddLocalization(item.Key, item.Value);
         }
 
         public static void UpdateDictionary2()
@@ -266,17 +264,15 @@ namespace StarQ.Shared.Extensions
                     )
                         continue;
 
-                    string newValue = Expand(entry.Value, replacements, regex);
+                    string newValue = Expand(entry.Value, replacements, regex, Id);
 
                     if (newValue != entry.Value)
                     {
-                        if (!replacedStrings.ContainsKey(entry.Key))
-                            replacedStrings[entry.Key] = entry.Value;
+                        replacedStrings.TryAdd(entry.Key, entry.Value);
                         //LogHelper.SendLog($"Expand End: {entry.Value}, {newValue}");
-                        toUpdate[entry.Key] = newValue;
+                        AddLocalization(entry.Key, newValue);
                     }
                 }
-                catch (NullReferenceException) { }
                 catch (Exception ex)
                 {
                     LogHelper.SendLog(
@@ -287,7 +283,12 @@ namespace StarQ.Shared.Extensions
             }
         }
 
-        static string Expand(string input, Dictionary<string, string> replacements, Regex regex)
+        static string Expand(
+            string input,
+            Dictionary<string, string> replacements,
+            Regex regex,
+            string Id
+        )
         {
             string result = input;
             bool changed;

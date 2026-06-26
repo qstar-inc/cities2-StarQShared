@@ -1,3 +1,8 @@
+## Environment variables:
+- CS2_GAMEVERSION : The game version (update after every public patch).
+- CS2_FORUMLINK : Fixed link to PDX Forum Megathread.
+Modding Toolchain variables are also required.
+
 ## .csproj
 ```
 <Project Sdk="Microsoft.NET.Sdk">
@@ -6,6 +11,8 @@
     <AssemblyName>XXX</AssemblyName>
     <AssemblyTitle>XXXX</AssemblyTitle>
     <Version>X.X.X</Version>
+    <GameVersion>$(CS2_GAMEVERSION)</GameVersion>
+    <ForumLink>$(CS2_FORUMLINK)</ForumLink>
     <Authors>StarQ</Authors>
 ```
 ```
@@ -25,6 +32,9 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="Colossal.PSI.PdxSdk">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
       <Private>false</Private>
     </Reference>
     <Reference Include="PDX.SDK">
@@ -71,6 +81,16 @@
       Value="$(Version)"
       Query="//ModVersion/@Value"
     />
+    <XmlPoke
+      XmlInputPath="$(PublishConfigurationPath)"
+      Value="$(GameVersion)"
+      Query="//GameVersion/@Value"
+    />
+    <XmlPoke
+      XmlInputPath="$(PublishConfigurationPath)"
+      Value="$(ForumLink)"
+      Query="//ForumLink/@Value"
+    />
   </Target>
 ```
 * If there is UI,
@@ -114,9 +134,15 @@
             LocaleHelper.Init(Id, Name, GetReplacements);
 ```
 ```
+        public void OnDispose()
+        {
+            LocaleHelper.Dispose();
+            m_Setting?.UnregisterInOptionsUI();
+            m_Setting = null;
+        }
         public static Dictionary<string, string> GetReplacements()
         {
-            return new() { { "X", "Y" } };
+            return new() { };
         }
 ```
 * If there is UIHost,
@@ -201,4 +227,31 @@
         {
             set => VariableHelper.OpenLog(Mod.Id);
         }
+```
+
+## tsconfig.json
+```
+    "paths": {
+      "mod.json": ["../mod.json"]
+    },
+    "preserveSymlinks": true
+```
+
+## webpack.json
+```
+        test: /\.s?css$/,
+        include: [
+          path.join(__dirname, "src"),
+          path.resolve(__dirname, "../StarQ.Shared/UI/styles"),
+        ],
+```
+```
+  resolve: {
+    symlinks: false,
+    extensions: [".tsx", ".ts", ".js"],
+```
+
+## create symlinks commands
+```
+Start-Process powershell -Verb RunAs -ArgumentList "-NoProfile -Command `"New-Item -ItemType SymbolicLink -Path '$PWD\shared' -Target 'D:\_Q\Codes\qstar-inc\ModsPersonal\StarQ.Shared\UI\shared'; New-Item -ItemType SymbolicLink -Path '$PWD\styles' -Target 'D:\_Q\Codes\qstar-inc\ModsPersonal\StarQ.Shared\UI\styles'`""
 ```
