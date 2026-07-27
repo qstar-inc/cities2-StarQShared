@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace StarQ.Shared.Extensions
 {
-    public class MathHelper
+    public static class MathHelper
     {
         private static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
 

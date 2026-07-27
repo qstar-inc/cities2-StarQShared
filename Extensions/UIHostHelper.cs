@@ -4,7 +4,7 @@ using Colossal.UI;
 
 namespace StarQ.Shared.Extensions
 {
-    public class UIHostHelper
+    public static class UIHostHelper
     {
         public static string? Id;
         public static string? uiHostName;

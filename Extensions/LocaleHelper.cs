@@ -9,7 +9,7 @@ using Game.SceneFlow;
 
 namespace StarQ.Shared.Extensions
 {
-    public partial class LocaleHelper
+    public static class LocaleHelper
     {
         private static string Id;
         private static string ModName;
@@ -333,6 +333,30 @@ namespace StarQ.Shared.Extensions
             } while (changed && regex.IsMatch(result));
 
             return result;
+        }
+
+        public static Dictionary<string, string> CommonLocale()
+        {
+            return new()
+            {
+                [GetOptionsTabLocaleId("GeneralTab")] = Translate("Options.SECTION[General]"),
+                [GetOptionsTabLocaleId("AboutTab")] = Translate("Options.SECTION[About]"),
+
+                [GetOptionsGroupLocaleId("GeneralGroup")] = Translate("Options.SECTION[General]"),
+
+                [GetOptionsLabelLocaleId("BMaCLink")] = Translate(
+                    "Menu.ASSET_EXTERNAL_LINK_TYPE[buymeacoffee]"
+                ),
+
+                [GetOptionsLabelLocaleId("Discord")] = Translate(
+                    "Menu.ASSET_EXTERNAL_LINK_TYPE[discord]"
+                ),
+
+                [GetOptionsLabelLocaleId("ParadoxForum")] = Translate(
+                    "Menu.ASSET_FORUM_LINK_LABEL"
+                ),
+                [$"{Id}.Mod.DefaultText"] = Translate("Options.INTERFACE_STYLE[default]"),
+            };
         }
     }
 }

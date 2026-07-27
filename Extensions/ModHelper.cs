@@ -7,11 +7,8 @@ using System.Threading.Tasks;
 using Colossal.IO.AssetDatabase;
 using Colossal.PSI.Common;
 using Colossal.PSI.PdxSdk;
-using Game.SceneFlow;
 using PDX.SDK.Contracts;
-using PDX.SDK.Contracts.Service.Account;
 using PDX.SDK.Contracts.Service.Account.Results;
-using PDX.SDK.Contracts.Service.Mods.Enums;
 using PDX.SDK.Contracts.Service.Mods.Interfaces;
 using PDX.SDK.Contracts.Service.Mods.Models;
 using PDX.SDK.Contracts.Service.Profile.Results;
@@ -26,7 +23,7 @@ namespace StarQ.Shared.Extensions
         Completed,
     }
 
-    public class ModHelper
+    public static class ModHelper
     {
         private static PdxSdkPlatform? m_Manager = null;
         private static readonly FieldInfo SDKContextField = typeof(PdxSdkPlatform).GetField(
@@ -58,7 +55,7 @@ namespace StarQ.Shared.Extensions
             if (PlatformManager.instance.principalPlatformName != "Steamworks")
                 return true;
 
-            if (SteamApps.GetAppBuildId() == 23700737)
+            if (!SteamApps.GetCurrentBetaName(out string _, 128))
                 return true;
 
             return false;

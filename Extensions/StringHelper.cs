@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace StarQ.Shared.Extensions
 {
-    public class StringHelper
+    public static class StringHelper
     {
         public static string FormatSize(ulong bytes)
         {

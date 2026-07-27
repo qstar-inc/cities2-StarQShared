@@ -6,7 +6,7 @@ using Game.UI.Localization;
 
 namespace StarQ.Shared.Extensions
 {
-    public class DialogHelper
+    public static class DialogHelper
     {
         public static void ShowMessageDialog(
             LocalizedString title,

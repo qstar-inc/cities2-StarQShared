@@ -2,11 +2,10 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Security.Policy;
 
 namespace StarQ.Shared.Extensions
 {
-    public partial class FileHelper
+    public static class FileHelper
     {
         public static string AddLongPathPrefix(string path) =>
             path.StartsWith(@"\\?\") ? path : @"\\?\" + Path.GetFullPath(path);
