@@ -7,98 +7,20 @@ Modding Toolchain variables are also required.
 ```
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configurations>Debug;Release</Configurations>
     <AssemblyName>XXX</AssemblyName>
     <AssemblyTitle>XXXX</AssemblyTitle>
     <Version>X.X.X</Version>
-    <GameVersion>$(CS2_GAMEVERSION)</GameVersion>
-    <ForumLink>$(CS2_FORUMLINK)</ForumLink>
-    <Authors>StarQ</Authors>
-```
-```
+    <!--The file where mod information which is required for publishing mod on PDX mods are stored-->
+    <PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
+  </PropertyGroup>
   <!--Imports must be after PropertyGroup block-->
   <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props" />
   <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.targets" />
   <Import Project="..\..\ModsPersonal\StarQ.Shared\StarQ.Shared.projitems" Label="Shared" />
+  <Import Project="..\..\ModsPersonal\StarQ.Shared\StarQ.Shared.props" />
+  <Import Project="..\..\ModsPersonal\StarQ.Shared\StarQ.Shared.targets" />
 ```
-```
-    <Reference Include="Colossal.AssetPipeline">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Colossal.Mathematics">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Colossal.PSI.Common">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Colossal.PSI.PdxSdk">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="PDX.SDK">
-      <Private>false</Private>
-    </Reference>
-```
-```
-  <ItemGroup>
-    <None Include="$(ModPropsFile)" Link="Properties\Mod.props" />
-    <None Include="$(ModTargetsFile)" Link="Properties\Mod.targets" />
-  </ItemGroup>
-  <Target Name="RunPythonPreBuild"
-    BeforeTargets="BeforeBuild"
-    Condition="Exists('$(ProjectDir)LocalizationSource')"
-  >
-    <Message Text="Running Python lang processor..." Importance="high" />
-    <Exec
-      Command="python &quot;D:\_Q\Codes\CS2 Processors\lang\create_loc_batch.py&quot;"
-      WorkingDirectory="$(ProjectDir)LocalizationSource"
-    />
-  </Target>
-  <Target Name="GetAdditionalFiles" AfterTargets="DeployWIP">
-    <ItemGroup>
-      <AdditionalFilesToDeploy Include="Resources\**\*.*" />
-    </ItemGroup>
-    <Copy
-      SourceFiles="@(AdditionalFilesToDeploy)"
-      DestinationFiles="@(AdditionalFilesToDeploy-&gt;'$(DeployDir)\%(RecursiveDir)%(Filename)%(Extension)')"
-    />
-  </Target>
-  <Target Name="SetupAttributes" BeforeTargets="BeforeBuild">
-    <XmlPoke
-      XmlInputPath="$(PublishConfigurationPath)"
-      Value="$([System.IO.File]::ReadAllText(Properties/LongDescription.md))"
-      Query="//LongDescription"
-    />
-    <XmlPoke
-      XmlInputPath="$(PublishConfigurationPath)"
-      Value="$([System.IO.File]::ReadAllText(Properties/ChangeLog.md))"
-      Query="//ChangeLog"
-    />
-    <XmlPoke
-      XmlInputPath="$(PublishConfigurationPath)"
-      Value="$(Version)"
-      Query="//ModVersion/@Value"
-    />
-    <XmlPoke
-      XmlInputPath="$(PublishConfigurationPath)"
-      Value="$(GameVersion)"
-      Query="//GameVersion/@Value"
-    />
-    <XmlPoke
-      XmlInputPath="$(PublishConfigurationPath)"
-      Value="$(ForumLink)"
-      Query="//ForumLink/@Value"
-    />
-  </Target>
-```
-* If there is UI,
-```
-  <Target Name="BuildUI" AfterTargets="AfterBuild">
-    <Exec Command="npm run build" WorkingDirectory="$(ProjectDir)/UI" />
-  </Target>
-```
+
 * For old lang systems,
 ```
   <ItemGroup>
@@ -113,27 +35,23 @@ Modding Toolchain variables are also required.
 
 ## Mod.cs
 ```
-    public class Mod : IMod
+    [GenerateModInfo]
+    public partial class Mod : IMod
     {
-        public static string Id = nameof(XXX);
-        public static string Name = Assembly
-            .GetExecutingAssembly()
-            .GetCustomAttribute<AssemblyTitleAttribute>()
-            .Title;
-        public static string Version = Assembly
-            .GetExecutingAssembly()
-            .GetName()
-            .Version.ToString(3);
-
-        public static ILog log = LogManager.GetLogger($"{Id}").SetShowsErrorsInUI(false);
-        public static Setting m_Setting;
-
         public void OnLoad(UpdateSystem updateSystem)
         {
             LogHelper.Init(Id, log);
             LocaleHelper.Init(Id, Name, GetReplacements);
-```
-```
+            
+            m_Setting = new Setting(this);
+            m_Setting.RegisterInOptionsUI();
+            AssetDatabase.global.LoadSettings(
+                nameof(XXX),
+                m_Setting,
+                new Setting(this)
+            );
+        }
+
         public void OnDispose()
         {
             LocaleHelper.Dispose();
@@ -144,6 +62,7 @@ Modding Toolchain variables are also required.
         {
             return new() { };
         }
+    }
 ```
 * If there is UIHost,
 ```
@@ -206,6 +125,14 @@ Modding Toolchain variables are also required.
         public bool Discord
         {
             set => VariableHelper.OpenDiscord(XXXX);
+        }
+
+        [SettingsUIButton]
+        [SettingsUIButtonGroup("Social")]
+        [SettingsUISection(AboutTab, InfoGroup)]
+        public bool ParadoxForum
+        {
+            set => VariableHelper.OpenParadoxForum();
         }
 
         [SettingsUIMultilineText]

@@ -16,7 +16,7 @@ namespace StarQ.Shared.Extensions
         private static Regex regex;
         private static Func<Dictionary<string, string>> GetReplacements;
         private static Action AddLocale;
-        private static LocalizationManager localizationManager;
+        public static LocalizationManager localizationManager;
 
         private static readonly object toUpdateLock = new();
         private static Dictionary<string, string> toUpdate = new();
@@ -119,7 +119,7 @@ namespace StarQ.Shared.Extensions
             }
         }
 
-        private static void FlushLocalizationQueue()
+        public static void FlushLocalizationQueue()
         {
             Dictionary<string, string> pending;
 

@@ -6,8 +6,8 @@ namespace StarQ.Shared.Extensions
 {
     public class UIHostHelper
     {
-        public static string Id;
-        public static string uiHostName;
+        public static string? Id;
+        public static string? uiHostName;
 
         public static void Init(string _id, string _uiHostName)
         {
@@ -15,7 +15,7 @@ namespace StarQ.Shared.Extensions
             uiHostName = _uiHostName;
         }
 
-        public static string IconHostName => uiHostName ?? null;
+        public static string? IconHostName => uiHostName ?? null;
 
         public static string Icon(string iconName, string extension = "svg")
         {

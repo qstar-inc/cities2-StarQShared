@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Colossal.Logging;
@@ -158,8 +159,11 @@ namespace StarQ.Shared.Extensions
         public static void SendLog(Exception exception, LogLevel level = LogLevel.Error) =>
             SendLog(exception.ToString(), level);
 
+        public static void SendLog(StringBuilder sb, LogLevel level = LogLevel.Error) =>
+            SendLog(sb.ToString(), level);
+
         public static bool CheckNull(
-            Object obj,
+            Object? obj,
             string text,
             string reason = "IDK how...",
             LogLevel level = LogLevel.Error

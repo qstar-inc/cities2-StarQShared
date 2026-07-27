@@ -37,9 +37,9 @@ namespace StarQ.Shared.Extensions
     public static class CustomChirpsBridge
     {
         private static bool _resolved;
-        private static Type _apiType; // CustomChirps.Systems.CustomChirpApiSystem
-        private static Type _deptEnumType; // CustomChirps.Systems.DepartmentAccount
-        private static MethodInfo _postChirp; // PostChirp(string, DepartmentAccount, Entity, string)
+        private static Type? _apiType; // CustomChirps.Systems.CustomChirpApiSystem
+        private static Type? _deptEnumType; // CustomChirps.Systems.DepartmentAccount
+        private static MethodInfo? _postChirp; // PostChirp(string, DepartmentAccount, Entity, string)
 
         /// <summary>True if at least the entity-based API is available.</summary>
         public static bool IsAvailable
@@ -68,7 +68,7 @@ namespace StarQ.Shared.Extensions
             string text,
             DepartmentAccountBridge department,
             Entity entity,
-            string customSenderName = null
+            string? customSenderName = null
         )
         { // entity can be Entity.Null if needed
             EnsureResolve();
@@ -97,27 +97,27 @@ namespace StarQ.Shared.Extensions
             }
         }
 
-        private static PrefabBase TryGetPrefabBase(Entity prefabEntity)
-        {
-            if (prefabEntity == Entity.Null)
-                return null;
-            var world = World.DefaultGameObjectInjectionWorld;
-            if (world == null)
-                return null;
+        //private static PrefabBase TryGetPrefabBase(Entity prefabEntity)
+        //{
+        //    if (prefabEntity == Entity.Null)
+        //        return null;
+        //    var world = World.DefaultGameObjectInjectionWorld;
+        //    if (world == null)
+        //        return null;
 
-            var em = world.EntityManager;
-            if (!em.HasComponent<PrefabData>(prefabEntity))
-                return null;
+        //    var em = world.EntityManager;
+        //    if (!em.HasComponent<PrefabData>(prefabEntity))
+        //        return null;
 
-            var prefabSystem = world.GetExistingSystemManaged<PrefabSystem>();
-            if (prefabSystem == null)
-                return null;
+        //    var prefabSystem = world.GetExistingSystemManaged<PrefabSystem>();
+        //    if (prefabSystem == null)
+        //        return null;
 
-            var pd = em.GetComponentData<PrefabData>(prefabEntity);
-            return prefabSystem.TryGetPrefab<PrefabBase>(pd, out var basePrefab)
-                ? basePrefab
-                : null;
-        }
+        //    var pd = em.GetComponentData<PrefabData>(prefabEntity);
+        //    return prefabSystem.TryGetPrefab<PrefabBase>(pd, out var basePrefab)
+        //        ? basePrefab
+        //        : null;
+        //}
 
         private static void EnsureResolve()
         {
@@ -128,10 +128,12 @@ namespace StarQ.Shared.Extensions
             // Find API & enum types (by FQN first, then scan loaded assemblies)
             _apiType =
                 Type.GetType("CustomChirps.Systems.CustomChirpApiSystem, CustomChirps")
-                ?? FindType("CustomChirps.Systems.CustomChirpApiSystem");
+                ?? FindType("CustomChirps.Systems.CustomChirpApiSystem")
+                ?? null;
             _deptEnumType =
                 Type.GetType("CustomChirps.Systems.DepartmentAccount, CustomChirps")
-                ?? FindType("CustomChirps.Systems.DepartmentAccount");
+                ?? FindType("CustomChirps.Systems.DepartmentAccount")
+                ?? null;
 
             if (_apiType != null)
             {
@@ -142,7 +144,7 @@ namespace StarQ.Shared.Extensions
             }
         }
 
-        private static Type FindType(string fullName)
+        private static Type? FindType(string fullName)
         {
             foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
             {
