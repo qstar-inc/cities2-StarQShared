@@ -156,8 +156,44 @@ namespace StarQ.Shared.Extensions
         public static void SendLog(float floatN, LogLevel level = LogLevel.Info) =>
             SendLog(floatN.ToString(), level);
 
-        public static void SendLog(Exception exception, LogLevel level = LogLevel.Error) =>
-            SendLog(exception.ToString(), level);
+        public static void SendLog(Exception exception, LogLevel level = LogLevel.Error)
+        {
+            SendLog($"{exception.Message}", level);
+
+            StringBuilder sb = new();
+
+            try
+            {
+                if (exception.StackTrace != null)
+                    sb.AppendLine(exception.StackTrace);
+            }
+            catch
+            {
+                SendLog($"StackTrace not found", LogLevel.Info);
+            }
+            try
+            {
+                if (exception.Source != null)
+                    sb.AppendLine(exception.Source);
+            }
+            catch
+            {
+                SendLog($"Source not found", LogLevel.Info);
+            }
+            try
+            {
+                if (exception.InnerException != null)
+                {
+                    sb.AppendLine(exception.InnerException.Message);
+                    sb.AppendLine(exception.InnerException.StackTrace);
+                }
+            }
+            catch
+            {
+                SendLog($"InnerException not found", LogLevel.Info);
+            }
+            LogHelper.SendLog(sb.ToString());
+        }
 
         public static void SendLog(StringBuilder sb, LogLevel level = LogLevel.Error) =>
             SendLog(sb.ToString(), level);

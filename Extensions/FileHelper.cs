@@ -111,5 +111,40 @@ namespace StarQ.Shared.Extensions
                 );
             }
         }
+
+        public static void CopyDirectory(string source, string destination)
+        {
+            Directory.CreateDirectory(destination);
+
+            foreach (string file in Directory.GetFiles(source))
+            {
+                string targetFile = Path.Combine(destination, Path.GetFileName(file));
+                File.Copy(file, targetFile, true);
+            }
+
+            foreach (string directory in Directory.GetDirectories(source))
+            {
+                string targetDirectory = Path.Combine(destination, Path.GetFileName(directory));
+                CopyDirectory(directory, targetDirectory);
+            }
+        }
+
+        public static void DeleteDirectorySafe(string path)
+        {
+            foreach (string file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
+            {
+                File.SetAttributes(file, FileAttributes.Normal);
+            }
+
+            foreach (
+                string directory in Directory.GetDirectories(path, "*", SearchOption.AllDirectories)
+            )
+            {
+                File.SetAttributes(directory, FileAttributes.Normal);
+            }
+
+            File.SetAttributes(path, FileAttributes.Normal);
+            Directory.Delete(path, true);
+        }
     }
 }

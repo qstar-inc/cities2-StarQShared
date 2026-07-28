@@ -47,7 +47,8 @@ namespace StarQ.Shared.Extensions
 
         public static void Dispose()
         {
-            localizationManager.onActiveDictionaryChanged -= OnActiveDictionaryChanged;
+            if (localizationManager != null)
+                localizationManager.onActiveDictionaryChanged -= OnActiveDictionaryChanged;
         }
 
         //private readonly Dictionary<string, Dictionary<string, string>> _locale;

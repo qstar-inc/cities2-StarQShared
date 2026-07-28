@@ -52,5 +52,10 @@ namespace StarQ.Shared.Extensions
 
             return string.Join(", ", parts) + suffix;
         }
+
+        public static string RemoveLineBreakesAndTrim(string text)
+        {
+            return text.Replace("\r", "").Replace("\n", "").Trim();
+        }
     }
 }
