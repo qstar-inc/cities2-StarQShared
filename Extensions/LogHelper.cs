@@ -158,9 +158,10 @@ namespace StarQ.Shared.Extensions
 
         public static void SendLog(Exception exception, LogLevel level = LogLevel.Error)
         {
-            SendLog($"{exception.Message}", level);
+            SendLog($"{exception.GetBaseException().GetType().Name}: {exception.Message}", level);
 
             StringBuilder sb = new();
+            sb.AppendLine("------- ERROR DATA START -------");
 
             try
             {
@@ -192,7 +193,8 @@ namespace StarQ.Shared.Extensions
             {
                 SendLog($"InnerException not found", LogLevel.Info);
             }
-            LogHelper.SendLog(sb.ToString());
+            sb.AppendLine("-------- ERROR DATA END --------");
+            SendLog(sb.ToString());
         }
 
         public static void SendLog(StringBuilder sb, LogLevel level = LogLevel.Error) =>

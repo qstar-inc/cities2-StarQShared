@@ -74,7 +74,7 @@ namespace StarQ.Shared.Extensions
             return false;
         }
 
-        public static ExecutableAsset? GetModAssembly(string name)
+        public static ExecutableAsset? GetModExecutable(string name)
         {
             foreach (ExecutableAsset executableAsset in ExecutableAsset.GetModAssets())
                 if (executableAsset.name == name)
