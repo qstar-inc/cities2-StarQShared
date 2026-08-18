@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.IO;
 using Colossal.Entities;
 using Colossal.IO.AssetDatabase;
+using Colossal.OdinSerializer;
 using Game;
 using Game.Prefabs;
 using Unity.Entities;
@@ -12,6 +14,12 @@ namespace StarQ.Shared.Extensions
         protected override void OnUpdate() { }
 
         public static Dictionary<Entity, string> prefabNames = new();
+
+        public static ContentType GetPrefabContentType(PrefabBase prefab)
+        {
+            using Stream stream = prefab.asset.GetReadStream();
+            return stream.ReadByte() != 123 ? ContentType.Binary : ContentType.Text;
+        }
 
         public static string GetPrefabName(Entity selectedPrefab)
         {
@@ -137,6 +145,25 @@ namespace StarQ.Shared.Extensions
                 return true;
             }
             return false;
+        }
+
+        public static bool TryGetOriginal(PrefabBase current, out PrefabBase? original)
+        {
+            PrefabAsset pbAsset = current.asset;
+            if (pbAsset == null)
+            {
+                original = null;
+                return false;
+            }
+
+            using Stream readStream = pbAsset.GetReadStream();
+            ContentType contentType = GetPrefabContentType(current);
+            object obj = SerializationUtility.DeserializeValueWeak(
+                readStream,
+                (DataFormat)contentType
+            );
+            original = (PrefabBase)obj;
+            return true;
         }
     }
 }

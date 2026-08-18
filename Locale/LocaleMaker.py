@@ -144,6 +144,8 @@ def make_loc():
         file_path = folder_path / modName
         create_loc(file_path, aggregated_data, lang_code)
 
+    (folder_path / ".gitignore").write_text("*\n!.gitignore")
+
 
 def regex_r(text):
     pattern = r"\[(.*?)\]"

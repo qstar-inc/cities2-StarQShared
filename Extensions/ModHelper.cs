@@ -55,10 +55,33 @@ namespace StarQ.Shared.Extensions
             if (PlatformManager.instance.principalPlatformName != "Steamworks")
                 return true;
 
-            if (!SteamApps.GetCurrentBetaName(out string _, 128))
-                return true;
+            try
+            {
+                Type steamworks = Type.GetType(
+                    "Steamworks.SteamApps, com.rlabrecque.steamworks.net",
+                    throwOnError: false
+                );
 
-            return false;
+                MethodInfo method = steamworks.GetMethod(
+                    "GetCurrentBetaName",
+                    BindingFlags.Public | BindingFlags.Static
+                );
+
+                if (method == null)
+                    return true;
+
+                object[] args = { null, 128 };
+                bool betaCheck = (bool)method.Invoke(null, args);
+
+                if (betaCheck)
+                    LogHelper.SendLog($"Currently running on non-public build");
+
+                return !betaCheck;
+            }
+            catch
+            {
+                return true;
+            }
         }
 
         public static bool IsModActive(string modName)
