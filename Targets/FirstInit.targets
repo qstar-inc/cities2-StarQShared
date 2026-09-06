@@ -1,0 +1,24 @@
+<Project>
+  <Target
+    Name="CopyLicense"
+    BeforeTargets="SyncCrowdinLocales"
+    Condition="'$(FirstInit)' == 'true'"
+  >
+    <Copy
+      SourceFiles="$(CS2_STARQ_SHARED_PATH)\LICENSE.txt"
+      DestinationFiles="$(MSBuildProjectDirectory)\LICENSE.txt"
+    />
+  </Target>
+
+  <Target
+    Name="EnsureGitIgnore"
+    BeforeTargets="CopyLicense"
+    Condition="'$(FirstInit)' == 'true' AND Exists('$(MSBuildProjectDirectory)\.gitignore')"
+  >
+    <ReadLinesFromFile File="$(MSBuildProjectDirectory)\.gitignore">
+      <Output TaskParameter="Lines" PropertyName="GitIgnoreContents" />
+    </ReadLinesFromFile>
+
+    <Exec Command="powershell -NoProfile -Command &quot;$p = '$(MSBuildProjectDirectory)\.gitignore'; $c = [IO.File]::ReadAllText($p); $n = [Environment]::NewLine; $s = if ($c.EndsWith($n)) { $n } else { $n + $n }; [IO.File]::AppendAllText($p, $s + '# Custom' + $n + '/Library' + $n + '/Resources/Localization' + $n)&quot;" />
+  </Target>
+</Project>

@@ -46,10 +46,13 @@ export function formatNumber(value: number) {
   return Number(value.toFixed(2));
 }
 
-export function localizedNumber(value: number, unit: Unit) {
+export function localizedNumber(value: number, unit: Unit = Unit.Integer) {
   return <LocalizedNumber value={formatNumber(value)} unit={unit} />;
 }
 
 export function localizedFloat2Number(value: number) {
+  if (Number.isInteger(value)) {
+    return localizedNumber(value);
+  }
   return localizedNumber(value, Unit.FloatTwoFractions);
 }

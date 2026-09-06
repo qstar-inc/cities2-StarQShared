@@ -1,0 +1,9 @@
+<Project>
+  <Target
+    Name="BuildUI"
+    AfterTargets="AfterBuild"
+    Condition="Exists('$(MSBuildProjectDirectory)\UI')"
+  >
+    <Exec Command="npm run build" WorkingDirectory="$(MSBuildProjectDirectory)\UI" />
+  </Target>
+</Project>

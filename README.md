@@ -10,15 +10,17 @@ Modding Toolchain variables are also required.
     <AssemblyName>XXX</AssemblyName>
     <AssemblyTitle>XXXX</AssemblyTitle>
     <Version>X.X.X</Version>
+    <FirstInit>true</FirstInit>
     <!--The file where mod information which is required for publishing mod on PDX mods are stored-->
     <PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
   </PropertyGroup>
   <!--Imports must be after PropertyGroup block-->
   <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props" />
   <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.targets" />
-  <Import Project="..\..\ModsPersonal\StarQ.Shared\StarQ.Shared.projitems" Label="Shared" />
-  <Import Project="..\..\ModsPersonal\StarQ.Shared\StarQ.Shared.props" />
-  <Import Project="..\..\ModsPersonal\StarQ.Shared\StarQ.Shared.targets" />
+  <Import Project="$(CS2_STARQ_SHARED_PATH)\StarQ.Shared.projitems" Label="Shared" />
+  <Import Project="$(CS2_STARQ_SHARED_PATH)\StarQ.Shared.props" />
+  <Import Project="$(CS2_STARQ_SHARED_PATH)\StarQ.Shared.targets" />
+</Project>
 ```
 
 * For old lang systems,
@@ -45,11 +47,7 @@ Modding Toolchain variables are also required.
             
             m_Setting = new Setting(this);
             m_Setting.RegisterInOptionsUI();
-            AssetDatabase.global.LoadSettings(
-                nameof(XXX),
-                m_Setting,
-                new Setting(this)
-            );
+            AssetDatabase.global.LoadSettings(Id, m_Setting, new Setting(this));
         }
 
         public void OnDispose()
@@ -58,6 +56,7 @@ Modding Toolchain variables are also required.
             m_Setting?.UnregisterInOptionsUI();
             m_Setting = null;
         }
+
         public static Dictionary<string, string> GetReplacements()
         {
             return new() { };
@@ -85,75 +84,11 @@ Modding Toolchain variables are also required.
 
 ## Setting.cs
 ```
-    [FileLocation("ModsSettings\\StarQ\\" + nameof(XXX))]
-    [SettingsUITabOrder(GeneralTab, AboutTab, LogTab)]
-    public class Setting : ModSetting
+    [GenerateSettingCommonAttribute]
+    public partial class Setting : ModSetting
     {
-        public Setting(IMod mod)
-            : base(mod) => SetDefaults();
-
-        public const string GeneralTab = "GeneralTab";
-        public const string GeneralGroup = "GeneralGroup";
-
-        public const string AboutTab = "AboutTab";
-        public const string InfoGroup = "InfoGroup";
-
-        public const string LogTab = "LogTab";
-
         public override void SetDefaults() { }
-
-        [SettingsUISection(AboutTab, InfoGroup)]
-        public string NameText => Mod.Name;
-
-        [SettingsUISection(AboutTab, InfoGroup)]
-        public string VersionText => VariableHelper.AddDevSuffix(Mod.Version);
-
-        [SettingsUISection(AboutTab, InfoGroup)]
-        public string AuthorText => VariableHelper.StarQ;
-
-        [SettingsUIButton]
-        [SettingsUIButtonGroup("Social")]
-        [SettingsUISection(AboutTab, InfoGroup)]
-        public bool BMaCLink
-        {
-            set => VariableHelper.OpenBMAC();
-        }
-
-        [SettingsUIButton]
-        [SettingsUIButtonGroup("Social")]
-        [SettingsUISection(AboutTab, InfoGroup)]
-        public bool Discord
-        {
-            set => VariableHelper.OpenDiscord(XXXX);
-        }
-
-        [SettingsUIButton]
-        [SettingsUIButtonGroup("Social")]
-        [SettingsUISection(AboutTab, InfoGroup)]
-        public bool ParadoxForum
-        {
-            set => VariableHelper.OpenParadoxForum();
-        }
-
-        [SettingsUIMultilineText]
-        [SettingsUIDisplayName(typeof(LogHelper), nameof(LogHelper.LogText))]
-        [SettingsUISection(LogTab, "")]
-        public string LogText => string.Empty;
-
-        [Exclude]
-        [SettingsUIHidden]
-        public bool IsLogMissing
-        {
-            get => VariableHelper.CheckLog(Mod.Id);
-        }
-
-        [SettingsUIButton]
-        [SettingsUIDisableByCondition(typeof(Setting), nameof(IsLogMissing))]
-        [SettingsUISection(LogTab, "")]
-        public bool OpenLog
-        {
-            set => VariableHelper.OpenLog(Mod.Id);
-        }
+    }
 ```
 
 ## tsconfig.json

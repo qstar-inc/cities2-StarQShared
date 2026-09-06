@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Colossal.Entities;
@@ -149,21 +150,29 @@ namespace StarQ.Shared.Extensions
 
         public static bool TryGetOriginal(PrefabBase current, out PrefabBase? original)
         {
+            original = null;
             PrefabAsset pbAsset = current.asset;
             if (pbAsset == null)
+                return false;
+
+            try
             {
-                original = null;
+                using Stream readStream = pbAsset.GetReadStream();
+                ContentType contentType = GetPrefabContentType(current);
+                object obj = SerializationUtility.DeserializeValueWeak(
+                    readStream,
+                    (DataFormat)contentType
+                );
+                original = (PrefabBase)obj;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.SendLog(
+                    $"[{ex.Message}] Failed reading original prefab file: {pbAsset.path}"
+                );
                 return false;
             }
-
-            using Stream readStream = pbAsset.GetReadStream();
-            ContentType contentType = GetPrefabContentType(current);
-            object obj = SerializationUtility.DeserializeValueWeak(
-                readStream,
-                (DataFormat)contentType
-            );
-            original = (PrefabBase)obj;
-            return true;
         }
     }
 }

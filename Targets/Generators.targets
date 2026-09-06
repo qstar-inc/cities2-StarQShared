@@ -1,0 +1,9 @@
+<Project>
+  <ItemGroup>
+    <ProjectReference
+      Include="$(CS2_STARQ_SHARED_PATH)\Projects\StarQ.Shared.Generators\StarQ.Shared.Generators.csproj"
+      OutputItemType="Analyzer"
+      ReferenceOutputAssembly="false"
+    />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,79 @@
+<Project>
+  <PropertyGroup>
+    <GenerateReadme Condition="'$(GenerateReadme)' != ''">false</GenerateReadme>
+    <LongDescriptionPath Condition="'$(LongDescriptionPath)' == ''"
+      >Properties\LongDescription.md</LongDescriptionPath>
+    <LicenseNotesPath Condition="'$(LicenseNotesPath)' == ''"
+      >$(CS2_STARQ_SHARED_PATH)\LicenseNotes.md</LicenseNotesPath>
+    <ReadmeOutputPath Condition="'$(ReadmeOutputPath)' == ''">README.md</ReadmeOutputPath>
+  </PropertyGroup>
+
+  <UsingTask
+    TaskName="ConcatTextFiles"
+    TaskFactory="RoslynCodeTaskFactory"
+    AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll"
+  >
+    <ParameterGroup>
+      <InputFiles ParameterType="System.String[]" Required="true" />
+      <Separator ParameterType="System.String" Required="false" />
+      <OutputFile ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Text" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+string sep = Separator ?? "\r\n\r\n";
+var sb = new StringBuilder();
+
+for (int i = 0; i < InputFiles.Length; i++)
+{
+    string content = File.ReadAllText(InputFiles[i]);
+    sb.Append(content);
+
+    if (i < InputFiles.Length - 1)
+    {
+        if (!content.EndsWith("\n"))
+        {
+            sb.Append(sep);
+        }
+        else
+        {
+            sb.Append(sep.TrimStart('\r', '\n'));
+        }
+    }
+}
+
+File.WriteAllText(OutputFile, sb.ToString(), new UTF8Encoding(false));
+]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target
+    Name="GenerateReadmeFromDescriptionAndLicense"
+    BeforeTargets="BeforeBuild"
+    Condition="'$(GenerateReadme)' != 'false'"
+  >
+    <Error
+      Condition="!Exists('$(LongDescriptionPath)')"
+      Text="GenerateReadme is enabled but LongDescriptionPath was not found: $(LongDescriptionPath)"
+    />
+
+    <Error
+      Condition="!Exists('$(LicenseNotesPath)')"
+      Text="GenerateReadme is enabled but LicenseNotesPath was not found: $(LicenseNotesPath)"
+    />
+
+    <ConcatTextFiles
+      InputFiles="$(LongDescriptionPath);$(LicenseNotesPath)"
+      Separator="&#13;&#10;&#13;&#10;"
+      OutputFile="$(ReadmeOutputPath)"
+    />
+
+    <Message
+      Importance="normal"
+      Text="Generated $(ReadmeOutputPath) from $(LongDescriptionPath) + $(LicenseNotesPath)"
+    />
+  </Target>
+</Project>

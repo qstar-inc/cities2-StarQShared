@@ -1,0 +1,11 @@
+<Project>
+  <Target Name="GetAdditionalFiles" AfterTargets="DeployWIP">
+    <ItemGroup>
+      <AdditionalFilesToDeploy Include="$(MSBuildProjectDirectory)\Resources\**\*.*" />
+    </ItemGroup>
+    <Copy
+      SourceFiles="@(AdditionalFilesToDeploy)"
+      DestinationFiles="@(AdditionalFilesToDeploy->'$(DeployDir)\%(RecursiveDir)%(Filename)%(Extension)')"
+    />
+  </Target>
+</Project>

@@ -5,11 +5,12 @@
     <ForumLink>$(CS2_FORUMLINK)</ForumLink>
     <Authors>StarQ</Authors>
     <PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
+    <SkipCrowdinSync>false</SkipCrowdinSync>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="Properties\*.md" />
     <ProjectReference
-      Include="..\..\ModsPersonal\StarQ.Shared.Generators\StarQ.Shared.Generators.csproj"
+      Include="$(CS2_STARQ_SHARED_PATH)\Projects\StarQ.Shared.Generators\StarQ.Shared.Generators.csproj"
       OutputItemType="Analyzer"
       ReferenceOutputAssembly="false"
     />
@@ -139,9 +140,6 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="Mono.WebBrowser">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="netstandard">
       <Private>false</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">
@@ -547,87 +545,4 @@
       <Private>false</Private>
     </Reference>
   </ItemGroup>
-
-  <!--ItemGroup>
-    <Reference Include="Colossal.AssetPipeline">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Colossal.Mathematics">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Colossal.PSI.Common">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Colossal.PSI.PdxSdk">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="PDX.SDK">
-      <Private>false</Private>
-    </Reference>
-  </ItemGroup-->
-  <!--ItemGroup>
-    <Reference Include="Game">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Colossal.Core">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Colossal.Logging">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Colossal.IO.AssetDatabase">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Colossal.UI">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Colossal.UI.Binding">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Colossal.Localization">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Unity.InputSystem">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine.JSONSerializeModule">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Unity.Burst">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Unity.Collections">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Unity.Entities">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Unity.Mathematics">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Colossal.AssetPipeline.Native">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Colossal.IO">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Colossal.OdinSerializer">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="System.IO.Compression">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="System.Net.Http">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine.ImageConversionModule">
-      <Private>false</Private>
-    </Reference>
-  </ItemGroup-->
 </Project>

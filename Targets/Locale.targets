@@ -1,0 +1,22 @@
+<Project>
+  <PropertyGroup>
+    <ForceCrowdinSync Condition="'$(SkipCrowdinSync)' == 'true'">-force</ForceCrowdinSync>
+  </PropertyGroup>
+
+  <Target Name="SyncCrowdinLocales" BeforeTargets="BeforeBuild">
+    <Message Text="Running Crowdin Sync..." Importance="high" />
+    <Exec Command="&quot;$(CS2_STARQ_SHARED_PATH)\Executables\LocaleManagement.exe&quot; -mod $(AssemblyName) -output &quot;$(ProjectDir)Resources\Localization&quot; -gitignore $(ForceCrowdinSync)" />
+  </Target>
+
+  <!--Target
+    Name="RunPythonForLocales"
+    BeforeTargets="BeforeBuild"
+    Condition="Exists('$(ProjectDir)LocalizationSource')"
+  >
+    <Message Text="Running Python lang processor..." Importance="high" />
+    <Exec
+      Command="python &quot;$(CS2_STARQ_SHARED_PATH)\Locale\LocaleMaker.py&quot;"
+      WorkingDirectory="$(ProjectDir)LocalizationSource"
+    />
+  </Target-->
+</Project>

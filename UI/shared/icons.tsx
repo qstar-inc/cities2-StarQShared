@@ -15,6 +15,7 @@ export const plusIcon = baseGameGlyphs + "Plus.svg";
 export const closeIcon = baseGameGlyphs + "Close.svg";
 export const surfaceIcon = baseGameIcons + "SurfaceAreaTool.svg";
 export const warningIcon = baseGameMisc + "Warning.svg";
+export const errorIcon = baseGameMisc + "Error.svg";
 
 export const vehicleIcons = {
   Bus: baseGameIcons + "Bus.svg",

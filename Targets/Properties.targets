@@ -1,0 +1,47 @@
+<Project>
+  <ItemGroup>
+    <AdditionalFiles Include="$(MSBuildProjectDirectory)\Properties\*.md" />
+  </ItemGroup>
+
+  <Target Name="CopyMissing" BeforeTargets="CopyLicense">
+    <Copy
+      SourceFiles="$(CS2_STARQ_SHARED_PATH)\Files\ChangeLog.md"
+      DestinationFiles="$(MSBuildProjectDirectory)\Properties\ChangeLog.md"
+      Condition="!Exists('$(MSBuildProjectDirectory)\Properties\ChangeLog.md')"
+    />
+
+    <Copy
+      SourceFiles="$(CS2_STARQ_SHARED_PATH)\Files\LongDescription.md"
+      DestinationFiles="$(MSBuildProjectDirectory)\Properties\LongDescription.md"
+      Condition="!Exists('$(MSBuildProjectDirectory)\Properties\LongDescription.md')"
+    />
+  </Target>
+
+  <Target Name="SetupAttributes" BeforeTargets="BeforeBuild">
+    <XmlPoke
+      XmlInputPath="$(PublishConfigurationPath)"
+      Value="$([System.IO.File]::ReadAllText($(MSBuildProjectDirectory)\Properties\LongDescription.md))"
+      Query="//LongDescription"
+    />
+    <XmlPoke
+      XmlInputPath="$(PublishConfigurationPath)"
+      Value="$([System.IO.File]::ReadAllText($(MSBuildProjectDirectory)\Properties\ChangeLog.md))"
+      Query="//ChangeLog"
+    />
+    <XmlPoke
+      XmlInputPath="$(PublishConfigurationPath)"
+      Value="$(Version)"
+      Query="//ModVersion/@Value"
+    />
+    <XmlPoke
+      XmlInputPath="$(PublishConfigurationPath)"
+      Value="$(GameVersion)"
+      Query="//GameVersion/@Value"
+    />
+    <XmlPoke
+      XmlInputPath="$(PublishConfigurationPath)"
+      Value="$(ForumLink)"
+      Query="//ForumLink/@Value"
+    />
+  </Target>
+</Project>
