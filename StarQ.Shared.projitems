@@ -9,55 +9,21 @@
     <Import_RootNamespace>StarQ.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)extensions\CustomChirpBridge.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)extensions\DialogHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Generators\GenerateSettingCommonAttribute.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Generators\GenerateModInfoAttribute.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Types\LoadedModInfo.cs" />
-    <Compile Include="..\..\ModsPersonal\StarQ.Shared\extensions\ManifestHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)extensions\UI\ExtendedInfoSectionBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)extensions\UI\ExtendedUISystemBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)extensions\ValueBindingHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)extensions\FileHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)extensions\HashMapHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)extensions\JsonHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\LocaleHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\LogHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)extensions\MathHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)extensions\ModHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)extensions\PrefabHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\UIHostHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)extensions\VariableHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)extensions\WorldHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Types\ModData.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)extensions\UI\" />
+    <Compile Include="$(MSBuildThisFileDirectory)**\*.cs" Exclude="$(MSBuildThisFileDirectory)Projects\**\*" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)LICENSE.txt" />
-    <Content Include="$(MSBuildThisFileDirectory)Locale.json" />
-    <Content Include="$(MSBuildThisFileDirectory)Locale\de-DE.json" />
-    <Content Include="$(MSBuildThisFileDirectory)Locale\en-US.json" />
-    <Content Include="$(MSBuildThisFileDirectory)Locale\es-ES.json" />
-    <Content Include="$(MSBuildThisFileDirectory)Locale\fr-FR.json" />
-    <Content Include="$(MSBuildThisFileDirectory)Locale\it-IT.json" />
-    <Content Include="$(MSBuildThisFileDirectory)Locale\ja-JP.json" />
-    <Content Include="$(MSBuildThisFileDirectory)Locale\ko-KR.json" />
-    <Content Include="$(MSBuildThisFileDirectory)Locale\pl-PL.json" />
-    <Content Include="$(MSBuildThisFileDirectory)Locale\pt-BR.json" />
-    <Content Include="$(MSBuildThisFileDirectory)Locale\ru-RU.json" />
-    <Content Include="$(MSBuildThisFileDirectory)Locale\zh-HANS.json" />
-    <Content Include="$(MSBuildThisFileDirectory)Locale\zh-HANT.json" />
+    <Content Include="$(MSBuildThisFileDirectory)**\*.json" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)files\ChangeLog.md" />
-    <None Include="$(MSBuildThisFileDirectory)Files\LongDescription.md" />
-    <None Include="$(MSBuildThisFileDirectory)LocaleMaker.py" />
+    <None Include="$(MSBuildThisFileDirectory)Executables\*" />
+    <None Include="$(MSBuildThisFileDirectory)Files\*" />
+    <None Include="$(MSBuildThisFileDirectory)LicenseNotes.md" />
     <None Include="$(MSBuildThisFileDirectory)Locale\LocaleMaker.py" />
+    <None Include="$(MSBuildThisFileDirectory)LocaleMaker.py" />
     <None Include="$(MSBuildThisFileDirectory)README.md" />
     <None Include="$(MSBuildThisFileDirectory)StarQ.Shared.props" />
     <None Include="$(MSBuildThisFileDirectory)StarQ.Shared.targets" />
+    <None Include="$(MSBuildThisFileDirectory)Targets\*" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "LocaleManagement": {
+      "commandName": "Project",
+      "commandLineArgs": "-mod \"MeshStatsViewer\" -output \"Resources/Localization\""
+    },
+    "Force": {
+      "commandName": "Project",
+      "commandLineArgs": "-mod \"MeshStatsViewer\" -force"
+    }
+  }
+}

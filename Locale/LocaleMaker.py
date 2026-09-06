@@ -13,7 +13,7 @@ parser.add_argument("-t", "--test", action="store_true", help="Run test mode")
 args = parser.parse_args()
 testing: bool = args.test
 
-LOCALE_PATTERN = re.compile(r"^[Locale_|]*[a-z]{2}-[A-Za-z]{2,4}\.json$")
+LOCALE_PATTERN = re.compile(r"^(?:Locale_)?([a-z]{2}(?:-[A-Za-z]{2,4})?)\.json$")
 ENGLISH_LANG = "en-US"
 
 script_dir = Path(__file__).resolve().parent
@@ -66,6 +66,8 @@ LANG_MAP = {
     "ru-RU": ["Russian", "Русский"],
     "zh-HANS": ["ChineseSimplified", "汉语"],
     "zh-HANT": ["ChineseTraditional", "繁體中文"],
+    "hi": ["Hindi", "हिन्दी"],
+    "bn": ["Bangla", "বাংলা"],
 }
 
 
@@ -87,24 +89,26 @@ def make_loc():
 
     for directory in [script_dir, Path.cwd()]:
         for path in directory.iterdir():
-            if path.is_file() and LOCALE_PATTERN.match(path.name):
-                if testing:
-                    print(f"Processing {path}")
-                lang_code = path.name.removeprefix("Locale_").removesuffix(".json")
-                with path.open("r", encoding="utf-8") as json_file:
-                    json_data = cast(dict[str, str], json5.load(json_file))
+            if path.is_file():
+                match = LOCALE_PATTERN.match(path.name)
+                if match and match.group(1) in LANG_MAP:
+                    if testing:
+                        print(f"Processing {path}")
+                    lang_code = path.name.removeprefix("Locale_").removesuffix(".json")
+                    with path.open("r", encoding="utf-8") as json_file:
+                        json_data = cast(dict[str, str], json5.load(json_file))
 
-                for id, text in json_data.items():
-                    valid = False
+                    for id, text in json_data.items():
+                        valid = False
 
-                    if id.startswith("Option"):
-                        valid, locale = format_options_text(id, modName)
-                        if valid:
-                            grouped_data[lang_code][locale] = text
+                        if id.startswith("Option"):
+                            valid, locale = format_options_text(id, modName)
+                            if valid:
+                                grouped_data[lang_code][locale] = text
 
-                    if not valid:
-                        # regex_key = regex_r(id)
-                        grouped_data[lang_code][f"{modName}.{id}"] = text
+                        if not valid:
+                            # regex_key = regex_r(id)
+                            grouped_data[lang_code][f"{modName}.{id}"] = text
 
     if ENGLISH_LANG not in grouped_data:
         raise RuntimeError(f"English locale '{ENGLISH_LANG}' not found.")
@@ -144,8 +148,6 @@ def make_loc():
         file_path = folder_path / modName
         create_loc(file_path, aggregated_data, lang_code)
 
-    (folder_path / ".gitignore").write_text("*\n!.gitignore")
-
 
 def regex_r(text):
     pattern = r"\[(.*?)\]"
@@ -183,7 +185,7 @@ def format_options_text(text: str, modName: str) -> tuple[bool, str]:
             groups = matches.groups()
             return (
                 True,
-                f"Options.{modName}.{modName}.Mod.{groups[1].upper()}[{groups[1]}]",
+                f"Options.{modName}.{modName}.Mod.{groups[0].upper()}[{groups[1]}]",
             )
     else:
         pattern = r"Option(.+)\.(.+)"

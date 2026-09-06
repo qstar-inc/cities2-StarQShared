@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  
+    <AssemblyName>LocaleManagement</AssemblyName>
+    <AssemblyTitle>StarQ Cities2 Crowdin Puller</AssemblyTitle>
+	<AssemblyDescription>Pull bundles from Crowdin and convert to Cities: Skylines II supported localization files</AssemblyDescription>
+	<AssemblyCompany>StarQ</AssemblyCompany>
+	<AssemblyCopyright>Copyright © 2026 StarQ</AssemblyCopyright>
+	<AssemblyVersion>1.0.0.0</AssemblyVersion>
+	  
+    <Author>StarQ</Author>
+    <ApplicationIcon>Logo_v3.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Logo_v3.ico" />
+  </ItemGroup>
+</Project>
