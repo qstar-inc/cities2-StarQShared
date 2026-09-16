@@ -1,6 +1,5 @@
 ## Environment variables:
-- CS2_GAMEVERSION : The game version (update after every public patch).
-- CS2_FORUMLINK : Fixed link to PDX Forum Megathread.
+- CS2_STARQ_SHARED_PATH : Path to this file's parent folder.
 Modding Toolchain variables are also required.
 
 ## .csproj
@@ -10,8 +9,7 @@ Modding Toolchain variables are also required.
     <AssemblyName>XXX</AssemblyName>
     <AssemblyTitle>XXXX</AssemblyTitle>
     <Version>X.X.X</Version>
-    <FirstInit>true</FirstInit>
-    <!--The file where mod information which is required for publishing mod on PDX mods are stored-->
+    <FirstInit>true</FirstInit> <!-- Remove after first build -->
     <PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
   </PropertyGroup>
   <!--Imports must be after PropertyGroup block-->
@@ -115,5 +113,5 @@ Modding Toolchain variables are also required.
 
 ## create symlinks commands
 ```
-Start-Process powershell -Verb RunAs -ArgumentList "-NoProfile -Command `"New-Item -ItemType SymbolicLink -Path '$PWD\shared' -Target 'D:\_Q\Codes\qstar-inc\ModsPersonal\StarQ.Shared\UI\shared'; New-Item -ItemType SymbolicLink -Path '$PWD\styles' -Target 'D:\_Q\Codes\qstar-inc\ModsPersonal\StarQ.Shared\UI\styles'`""
+Start-Process powershell -Verb RunAs -ArgumentList "-NoProfile -Command `"New-Item -ItemType SymbolicLink -Path '$PWD\src\shared' -Target 'D:\_Q\Codes\qstar-inc\ModsPersonal\StarQ.Shared\UI\shared'; New-Item -ItemType SymbolicLink -Path '$PWD\src\styles' -Target 'D:\_Q\Codes\qstar-inc\ModsPersonal\StarQ.Shared\UI\styles'`""
 ```

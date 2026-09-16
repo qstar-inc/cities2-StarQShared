@@ -1,23 +1,9 @@
 import { Icon, Portal, Scrollable } from "cs2/ui";
-import {
-  CSSProperties,
-  FC,
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { CSSProperties, FC, ReactElement, useCallback, useEffect, useMemo, useState } from "react";
 import { closeIcon } from "shared/icons";
 import {
-  closeButtonClass,
-  closeButtonImageClass,
-  getFontScale,
-  getRem,
-  styleMainScreen,
-  stylePanel,
-  styleSIPTheme,
-  wrapperClass,
+    closeButtonClass, closeButtonImageClass, getFontScale, getRem, styleMainScreen, stylePanel,
+    styleSIPTheme, wrapperClass
 } from "shared/style";
 import { DragHandle } from "shared/vanilla";
 import panelStyle from "styles/panel.module.scss";
@@ -89,7 +75,7 @@ export const PanelBase: FC<PanelBaseProps> = (props: PanelBaseProps) => {
     setPanelTop(mainScreen.offsetTop);
 
     if (!props.sipAligned) {
-      const sipWidth = 400 * rem * (0.33333 + fontScale / 1.5);
+      const sipWidth = (400 + 40) * rem * (0.33333 + fontScale / 1.5);
       const newPanelLeft =
         mainScreen.offsetWidth + mainScreen.offsetLeft - sipWidth;
       setPanelLeft(newPanelLeft);

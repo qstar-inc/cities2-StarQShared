@@ -12,8 +12,8 @@ namespace StarQ.Shared.Extensions
 
         public static bool FilesAreEqual(string file1, string file2)
         {
-            using var fs1 = File.OpenRead(file1);
-            using var fs2 = File.OpenRead(file2);
+            using FileStream fs1 = File.OpenRead(file1);
+            using FileStream fs2 = File.OpenRead(file2);
 
             if (fs1.Length != fs2.Length)
                 return false;

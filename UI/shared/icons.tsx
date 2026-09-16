@@ -8,6 +8,7 @@ export const copyIcon = baseGameIcons + "NewUI/Copy_Button2.svg";
 export const resetIcon = baseGameIcons + "NewUI/Reset_Button.svg";
 export const saveIcon = baseGameEditor + "Save.svg";
 export const trashIcon = baseGameIcons + "NewUI/Delete_Button.svg";
+export const upkeepIcon = baseGameIcons + "Upkeep.svg";
 export const threeDotIcon = baseGameGlyphs + "More.svg";
 export const rightArrowIcon = baseGameGlyphs + "ThickStrokeArrowRight.svg";
 export const leftArrowIcon = baseGameGlyphs + "ThickStrokeArrowLeft.svg";

@@ -1,8 +1,8 @@
 <Project>
   <PropertyGroup>
     <Configurations>Debug;Release</Configurations>
-    <GameVersion>$(CS2_GAMEVERSION)</GameVersion>
-    <ForumLink>$(CS2_FORUMLINK)</ForumLink>
+    <GameVersion>1.6.2*</GameVersion>
+    <ForumLink>https://forum.paradoxplaza.com/forum/threads/starq-mods-assets-projects-megathread.1930389/</ForumLink>
     <Authors>StarQ</Authors>
     <PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
     <SkipCrowdinSync>false</SkipCrowdinSync>
