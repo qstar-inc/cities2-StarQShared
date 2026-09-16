@@ -18,6 +18,8 @@ namespace StarQ.Shared.Extensions
         private static Action AddLocale;
         public static LocalizationManager localizationManager;
 
+        public static Dictionary<string, string> translationCache = new();
+
         private static readonly object toUpdateLock = new();
         private static Dictionary<string, string> toUpdate = new();
 
@@ -105,11 +107,18 @@ namespace StarQ.Shared.Extensions
 
         public static string Translate(string id, string fallback = null)
         {
+            if (translationCache.TryGetValue(id, out var cached))
+                return cached;
+
+            string returnVal = id;
+
             if (localizationManager?.activeDictionary?.TryGetValue(id, out string result) == true)
-                return result;
-            if (fallback != null)
-                return fallback;
-            return id;
+                returnVal = result;
+            else if (fallback != null)
+                returnVal = fallback;
+
+            translationCache[id] = returnVal;
+            return returnVal;
         }
 
         public static void AddLocalization(string id, string value)
@@ -219,6 +228,7 @@ namespace StarQ.Shared.Extensions
 
         public static void OnActiveDictionaryChanged()
         {
+            translationCache.Clear();
             replacedStrings.Clear();
             UpdateDictionary();
             FlushLocalizationQueue();
