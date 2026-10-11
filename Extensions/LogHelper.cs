@@ -158,50 +158,47 @@ namespace StarQ.Shared.Extensions
 
         public static void SendLog(Exception exception, LogLevel level = LogLevel.Error)
         {
-            SendLog($"{exception.GetBaseException().GetType().Name}: {exception.Message}", level);
-
             StringBuilder sb = new();
-            sb.AppendLine("------- ERROR DATA START -------");
 
-            try
+            sb.AppendLine("");
+
+            Exception current = exception;
+            int depth = 0;
+            while (current != null)
             {
-                if (exception.StackTrace != null)
-                    sb.AppendLine(exception.StackTrace);
-            }
-            catch
-            {
-                SendLog($"StackTrace not found", LogLevel.Info);
-            }
-            try
-            {
-                if (exception.Source != null)
-                    sb.AppendLine(exception.Source);
-            }
-            catch
-            {
-                SendLog($"Source not found", LogLevel.Info);
-            }
-            try
-            {
-                if (exception.InnerException != null)
+                try
                 {
-                    sb.AppendLine(exception.InnerException.Message);
-                    sb.AppendLine(exception.InnerException.StackTrace);
+                    sb.AppendLine($"[{depth}] {current.GetType().FullName}: {current.Message}");
+
+                    if (!string.IsNullOrEmpty(current.Source))
+                        sb.AppendLine($"  Source: {current.Source}");
+
+                    if (!string.IsNullOrEmpty(current.StackTrace))
+                        sb.AppendLine(TrimPath(current.StackTrace));
+                }
+                catch
+                {
+                    sb.AppendLine($"[{depth}] <failed to read exception data>");
+                }
+
+                current = current.InnerException;
+                depth++;
+
+                if (depth > 10)
+                {
+                    sb.AppendLine("... chain truncated after 10 levels ...");
+                    break;
                 }
             }
-            catch
-            {
-                SendLog($"InnerException not found", LogLevel.Info);
-            }
-            sb.AppendLine("-------- ERROR DATA END --------");
-            SendLog(sb.ToString());
+
+            SendLog(sb.ToString(), level);
         }
 
         public static void SendLog(StringBuilder sb, LogLevel level = LogLevel.Error) =>
             SendLog(sb.ToString(), level);
 
         public static bool CheckNull(
-            Object? obj,
+            object? obj,
             string text,
             string reason = "IDK how...",
             LogLevel level = LogLevel.Error
@@ -213,6 +210,52 @@ namespace StarQ.Shared.Extensions
                 return true;
             }
             return false;
+        }
+
+        private static string TrimPath(string stackTrace)
+        {
+            if (string.IsNullOrEmpty(stackTrace) || string.IsNullOrEmpty(_id))
+                return stackTrace;
+
+            var lines = stackTrace.Split('\n');
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i].TrimEnd('\r');
+
+                string marker = Path.DirectorySeparatorChar + _id + Path.DirectorySeparatorChar;
+                int idx = line.IndexOf(marker, StringComparison.Ordinal);
+                if (idx >= 0)
+                {
+                    int inIdx = line.IndexOf(" in ", StringComparison.Ordinal);
+                    if (inIdx >= 0)
+                    {
+                        string before = line[..(inIdx + 4)];
+                        string pathPart = line[(inIdx + 4)..];
+                        int pathMarkerIdx = pathPart.IndexOf(marker, StringComparison.Ordinal);
+                        if (pathMarkerIdx >= 0)
+                            pathPart = pathPart[(pathMarkerIdx + marker.Length)..];
+                        line = before + pathPart;
+                    }
+                }
+
+                lines[i] = FormatFrame(line);
+            }
+
+            return string.Join("\n", lines);
+        }
+
+        private static readonly Regex FrameRegex = new(
+            @"at\s+(?:[\w.]+\.)*(?<method>[\w<>`]+)\s*\([^)]*\)\s*(?:\[[^\]]*\]\s*)?in\s+(?<path>.+)$",
+            RegexOptions.Compiled
+        );
+
+        private static string FormatFrame(string line)
+        {
+            var match = FrameRegex.Match(line);
+            if (!match.Success)
+                return line;
+
+            return $"  {match.Groups["method"].Value} in {match.Groups["path"].Value}";
         }
     }
 }
