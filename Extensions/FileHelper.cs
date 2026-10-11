@@ -1,12 +1,28 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
+using System.IO.Compression;
+using Newtonsoft.Json;
 
 namespace StarQ.Shared.Extensions
 {
     public static class FileHelper
     {
+        public class FileEntry
+        {
+            [JsonProperty("path")]
+            private string Path { get; set; } = string.Empty;
+
+            [JsonProperty("size")]
+            private long Size { get; set; }
+
+            public FileEntry(string path, long size)
+            {
+                Path = path;
+                Size = size;
+            }
+        }
+
         public static string AddLongPathPrefix(string path) =>
             path.StartsWith(@"\\?\") ? path : @"\\?\" + Path.GetFullPath(path);
 
@@ -28,64 +44,6 @@ namespace StarQ.Shared.Extensions
             } while (b1 == b2 && b1 != -1);
 
             return b1 == b2;
-        }
-
-        public enum Sha256OutputType
-        {
-            Base64,
-            Hex64,
-        }
-
-        public static string? Sha256FromFile(
-            string filePath,
-            Sha256OutputType outputType = Sha256OutputType.Base64
-        )
-        {
-            try
-            {
-                filePath = AddLongPathPrefix(filePath);
-                using SHA256 sha256 = SHA256.Create();
-
-                using FileStream stream = new(
-                    filePath,
-                    FileMode.Open,
-                    FileAccess.Read,
-                    FileShare.Read,
-                    1 << 20,
-                    FileOptions.SequentialScan
-                );
-
-                byte[] hashBytes = sha256.ComputeHash(stream);
-
-                switch (outputType)
-                {
-                    case Sha256OutputType.Base64:
-                        return Convert
-                            .ToBase64String(hashBytes)
-                            .Replace("/", "_")
-                            .Replace("+", "-");
-                    case Sha256OutputType.Hex64:
-                        return Sha256FromBytes(hashBytes);
-                }
-            }
-            catch (UnauthorizedAccessException)
-            {
-                LogHelper.SendLog($"Access to file '{filePath}' is denied.");
-            }
-            catch (IOException ex)
-            {
-                LogHelper.SendLog($"Error computing SHA256 for file '{filePath}': {ex.Message}");
-            }
-            catch (Exception ex)
-            {
-                LogHelper.SendLog(ex);
-            }
-            return null;
-        }
-
-        public static string Sha256FromBytes(byte[] hashBytes)
-        {
-            return string.Concat(hashBytes.Select(b => b.ToString("x2")));
         }
 
         public static string GetRelativePath(string basePath, string fullPath)
@@ -145,6 +103,84 @@ namespace StarQ.Shared.Extensions
 
             File.SetAttributes(path, FileAttributes.Normal);
             Directory.Delete(path, true);
+        }
+
+        public static List<FileEntry> ListFiles(string root, bool ignoreMeta)
+        {
+            List<FileEntry> result = new();
+            foreach (
+                string file in Directory.EnumerateFiles(root, "*", SearchOption.AllDirectories)
+            )
+            {
+                string relative = Path.GetRelativePath(root, file).Replace('\\', '/');
+
+                if (ignoreMeta && IsMetaPath(relative))
+                    continue;
+
+                long fileSize = new FileInfo(file).Length;
+
+                if (!IsZipFile(file))
+                {
+                    result.Add(new FileEntry(relative, fileSize));
+                    continue;
+                }
+
+                List<FileEntry> entries = new();
+                try
+                {
+                    using ZipArchive? archive = ZipFile.OpenRead(file);
+                    foreach (ZipArchiveEntry entry in archive.Entries)
+                    {
+                        if (entry.FullName.EndsWith('/'))
+                            continue;
+
+                        entries.Add(new FileEntry($"{relative}@{entry.FullName}", entry.Length));
+                    }
+                    result.AddRange(entries);
+                }
+                catch (Exception ex)
+                    when (ex is InvalidDataException or IOException or NotSupportedException)
+                {
+                    result.Add(new FileEntry(relative, fileSize));
+                }
+            }
+            return result;
+        }
+
+        public static bool IsMetaPath(string path)
+        {
+            foreach (string segment in path.Split('/', '\\'))
+            {
+                if (
+                    segment.EndsWith(".metadata", StringComparison.OrdinalIgnoreCase)
+                    || segment.EndsWith(".cpatch", StringComparison.OrdinalIgnoreCase)
+                )
+                    return true;
+            }
+            return false;
+        }
+
+        public static bool IsZipFile(string path)
+        {
+            try
+            {
+                using FileStream? fs = File.OpenRead(path);
+                Span<byte> sig = stackalloc byte[4];
+                if (fs.Read(sig) < 4)
+                    return false;
+
+                return sig[0] == 'P'
+                    && sig[1] == 'K'
+                    && (
+                        (sig[2] == 3 && sig[3] == 4)
+                        || (sig[2] == 5 && sig[3] == 6)
+                        || (sig[2] == 7 && sig[3] == 8)
+                    );
+            }
+            catch (IOException)
+            {
+                return false;
+            }
         }
     }
 }
