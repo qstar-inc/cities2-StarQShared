@@ -38,8 +38,6 @@ namespace StarQ.Shared.Extensions
             localizationManager = GameManager.instance.localizationManager;
             localizationManager.onActiveDictionaryChanged += OnActiveDictionaryChanged;
             OnActiveDictionaryChanged();
-            //foreach (var item in new LocaleHelper($"{Id}.Locale.json").GetAvailableLanguages())
-            //    localizationManager.AddSource(item.LocaleId, item);
 
             LogHelper.SendLog("Initing LocaleHelper", LogLevel.DEV);
 #if DEBUG
@@ -53,57 +51,7 @@ namespace StarQ.Shared.Extensions
                 localizationManager.onActiveDictionaryChanged -= OnActiveDictionaryChanged;
         }
 
-        //private readonly Dictionary<string, Dictionary<string, string>> _locale;
-
         private static readonly ConcurrentDictionary<string, string> replacedStrings = new();
-
-        //public LocaleHelper(string dictionaryResourceName)
-        //{
-        //    var assembly = GetType().Assembly;
-
-        //    _locale = new Dictionary<string, Dictionary<string, string>>
-        //    {
-        //        [string.Empty] = GetDictionaryEmbedded(dictionaryResourceName),
-        //    };
-
-        //    foreach (var name in assembly.GetManifestResourceNames())
-        //    {
-        //        if (
-        //            name == dictionaryResourceName
-        //            || !name.Contains(
-        //                Path.GetFileNameWithoutExtension(dictionaryResourceName) + "."
-        //            )
-        //        )
-        //            continue;
-
-        //        var key = Path.GetFileNameWithoutExtension(name);
-
-        //        _locale[key[(key.LastIndexOf('.') + 1)..]] = GetDictionaryEmbedded(name);
-        //    }
-
-        //    Dictionary<string, string> GetDictionaryEmbedded(string resourceName)
-        //    {
-        //        try
-        //        {
-        //            using var resourceStream = assembly.GetManifestResourceStream(resourceName);
-        //            if (resourceStream == null)
-        //                return new Dictionary<string, string>();
-
-        //            using var reader = new StreamReader(resourceStream, Encoding.UTF8);
-        //            JSON.MakeInto<Dictionary<string, string>>(
-        //                JSON.Load(reader.ReadToEnd()),
-        //                out var dictionary
-        //            );
-
-        //            return dictionary;
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            LogHelper.SendLog($"Failed to load embedded locale '{resourceName}': {ex}");
-        //            return new Dictionary<string, string>();
-        //        }
-        //    }
-        //}
 
         public static string Translate(string id, string fallback = null)
         {
@@ -239,7 +187,6 @@ namespace StarQ.Shared.Extensions
         public static void UpdateDictionary()
         {
             AddLocalization($"Options.SECTION[{Id}.{Id}.Mod]", ModName);
-            //Dictionary<string, string> toUpdateX = new();
 
             Dictionary<string, string> commonReplacements = CommonLocale();
             AddLocale?.Invoke();
@@ -366,7 +313,7 @@ namespace StarQ.Shared.Extensions
                 [GetOptionsLabelLocaleId("ParadoxForum")] = Translate(
                     "Menu.ASSET_FORUM_LINK_LABEL"
                 ),
-                [$"{Id}.Mod.DefaultText"] = Translate("Options.INTERFACE_STYLE[default]"),
+                [$"{Id}.DefaultText"] = Translate("Options.INTERFACE_STYLE[default]"),
             };
         }
     }

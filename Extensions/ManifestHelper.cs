@@ -14,8 +14,20 @@ namespace StarQ.Shared.Extensions
         );
         public static Dictionary<string, Dictionary<string, string>> ManifestData = new();
 
-        public static Dictionary<string, string> ReadManifestFile(string manifestPath)
+        public static Dictionary<string, string> ReadManifestFile(string? manifestPath)
         {
+            if (manifestPath is null)
+            {
+                LogHelper.SendLog($"{manifestPath} is null");
+                return new();
+            }
+
+            if (string.IsNullOrEmpty(manifestPath))
+            {
+                LogHelper.SendLog($"{manifestPath} is empty");
+                return new();
+            }
+
             if (ManifestData.TryGetValue(manifestPath, out var cached))
                 return cached;
 

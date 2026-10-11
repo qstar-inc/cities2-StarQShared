@@ -12,7 +12,6 @@ using PDX.SDK.Contracts.Service.Account.Results;
 using PDX.SDK.Contracts.Service.Mods.Interfaces;
 using PDX.SDK.Contracts.Service.Mods.Models;
 using PDX.SDK.Contracts.Service.Profile.Results;
-using Steamworks;
 
 namespace StarQ.Shared.Extensions
 {

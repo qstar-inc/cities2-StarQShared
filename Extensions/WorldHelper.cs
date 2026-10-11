@@ -34,6 +34,8 @@ namespace StarQ.Shared.Extensions
             where T : SystemBase =>
             World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<T>();
 
+        public static bool IsMainMenu =>
+            (GameManager.instance.gameMode & GameMode.MainMenu) == GameMode.MainMenu;
         public static bool IsGame => GameManager.instance.gameMode.IsGame();
         public static bool IsEditor => GameManager.instance.gameMode.IsEditor();
         public static bool IsGameOrEditor => GameManager.instance.gameMode.IsGameOrEditor();
