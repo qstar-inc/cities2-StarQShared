@@ -131,6 +131,16 @@ namespace StarQ.Shared.Extensions
             return $"Options.OPTION_DESCRIPTION[{modId}.{modId}.Mod.Setting.{id}]";
         }
 
+        public static string GetOptionsEnumLocaleId(
+            string enumGroup,
+            string enumValue,
+            string modId = null
+        )
+        {
+            modId ??= Id;
+            return $"Options.{modId}.{modId}.Mod.{enumGroup.ToUpperInvariant()}[{enumValue}]";
+        }
+
         public static string VanillaLocaleSignValueRemover(
             string id,
             string value,
