@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace StarQ.Shared.Extensions
 {
@@ -56,6 +57,11 @@ namespace StarQ.Shared.Extensions
         public static string RemoveLineBreakesAndTrim(string text)
         {
             return text.Replace("\r", "").Replace("\n", "").Trim();
+        }
+
+        public static string ToDisplayName(string value)
+        {
+            return Regex.Replace(value, "(?<!^)([A-Z])", " $1");
         }
     }
 }
