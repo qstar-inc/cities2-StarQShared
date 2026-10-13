@@ -110,6 +110,21 @@ export const dropdownModule = getModule(
   "classes",
 );
 
+export const styleEditorPanel = getModule(
+  "game-ui/editor/themes/editor-panel.module.scss",
+  "classes",
+);
+
+export const styleEditorHierarcy = getModule(
+  "game-ui/editor/components/hierarchy/hierarchy-panel.module.scss",
+  "classes",
+);
+
+export const panelThemes = {
+  editor: styleEditorPanel,
+  default: styleDefault,
+} as const;
+
 export const wrapperClass = `${stylePanel.panel} ${styleSIP.selectedInfoPanel}`;
 export const closeButtonClass = `${styleCloseButton.button} ${stylePanel.closeButton}`;
 export const closeButtonImageClass = `${styleTintedIcon.tintedIcon} ${styleIcon.icon}`;

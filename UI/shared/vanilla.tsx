@@ -133,3 +133,42 @@ export const DragHandle = getModule(
   "game-ui/common/input/drag-handle.tsx",
   "DragHandle",
 );
+
+interface ResizeContainerProps {
+  size: number;
+  minSize: number;
+  maxSize: number;
+  direction: "up" | "down" | "left" | "right" | "none";
+  className?: string;
+  dragHandleClassName?: string;
+  children?: ReactNode;
+  onDrag?: (size: number) => void;
+  onResize: (size: number) => void;
+}
+
+export const ResizeContainer = getModule(
+  "game-ui/editor/components/resize-container/resize-container.tsx",
+  "ResizeContainer",
+) as React.FC<ResizeContainerProps>;
+
+interface CollapsiblePanelProps {
+  theme?: object;
+  onClose?: () => void;
+  expanded?: boolean;
+  headerText?: React.ReactNode;
+  headerUiTag?: string;
+  onToggleExpanded?: (expanded: boolean) => void;
+  className?: string;
+  children?: React.ReactNode;
+  isFocusRoot?: boolean;
+  headerIcon?: string | React.ReactNode;
+  togglable?: boolean;
+
+  // Additional props forwarded to the underlying panel component.
+  [key: string]: unknown;
+}
+
+export const CollapsiblePanel = getModule(
+  "game-ui/common/panel/collapsible-panel.tsx",
+  "CollapsiblePanel",
+) as React.FC<CollapsiblePanelProps>;
