@@ -5,7 +5,7 @@
     <ForumLink>https://forum.paradoxplaza.com/forum/threads/starq-mods-assets-projects-megathread.1930389/</ForumLink>
     <Authors>StarQ</Authors>
     <PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
-    <SkipCrowdinSync>false</SkipCrowdinSync>
+    <CrowdinSync>false</CrowdinSync>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="Properties\*.md" />

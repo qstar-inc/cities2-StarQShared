@@ -1,7 +1,10 @@
 import { Unit } from "cs2/l10n";
 import { useEffect, useState } from "react";
 import {
-    infoRowModule, sipTextInputModule, textElipsisInputModule, textElipsisInputThemeModule
+  infoRowModule,
+  sipTextInputModule,
+  textElipsisInputModule,
+  textElipsisInputThemeModule,
 } from "shared/style";
 import { LocalizedNumber } from "shared/vanilla-type-fix";
 import commonStyle from "styles/common.module.scss";

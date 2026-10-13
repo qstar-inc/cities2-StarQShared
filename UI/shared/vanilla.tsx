@@ -2,7 +2,7 @@ import { ToggleField, UISound } from "cs2/bindings";
 import { StyleProps } from "cs2/input";
 import { getModule } from "cs2/modding";
 import { ButtonProps, FocusKey, ScrollController } from "cs2/ui";
-import { ReactElement } from "react";
+import { ReactElement, ReactNode } from "react";
 
 interface InfoButtonProps extends ButtonProps {
   label: string;

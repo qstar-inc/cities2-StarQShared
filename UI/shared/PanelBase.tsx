@@ -1,9 +1,23 @@
 import { Icon, Portal, Scrollable } from "cs2/ui";
-import { CSSProperties, FC, ReactElement, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  CSSProperties,
+  FC,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { closeIcon } from "shared/icons";
 import {
-    closeButtonClass, closeButtonImageClass, getFontScale, getRem, styleMainScreen, stylePanel,
-    styleSIPTheme, wrapperClass
+  closeButtonClass,
+  closeButtonImageClass,
+  getFontScale,
+  getRem,
+  styleMainScreen,
+  stylePanel,
+  styleSIPTheme,
+  wrapperClass,
 } from "shared/style";
 import { DragHandle } from "shared/vanilla";
 import panelStyle from "styles/panel.module.scss";
@@ -19,7 +33,6 @@ interface PanelBaseProps {
   left?: number;
   posX?: number;
   posY?: number;
-  containerClass?: string;
   sipAligned?: boolean;
   onClose?: () => void;
 }

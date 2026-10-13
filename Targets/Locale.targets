@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <ForceCrowdinSync Condition="'$(SkipCrowdinSync)' == 'true'">-force</ForceCrowdinSync>
+    <ForceCrowdinSync Condition="'$(CrowdinSync)' == 'true'">-force</ForceCrowdinSync>
   </PropertyGroup>
 
   <Target Name="SyncCrowdinLocales" BeforeTargets="BeforeBuild">
