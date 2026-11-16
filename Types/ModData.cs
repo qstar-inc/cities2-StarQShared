@@ -4,28 +4,28 @@ namespace StarQ.Shared.Types
 {
     public class ModData : IComparable<ModData>
     {
-        public string modId;
-        public string modName;
-        public string modVersion;
+        public string ModId { get; set; } = string.Empty;
+        public string ModName { get; set; } = string.Empty;
+        public string ModVersion { get; set; } = string.Empty;
 
         public int CompareTo(ModData other)
         {
             if (other == null)
                 return 1;
 
-            return modId.CompareTo(other.modId);
+            return ModId.CompareTo(other.ModId);
         }
 
         public override bool Equals(object obj)
         {
             if (obj is not ModData other)
                 return false;
-            return modId == other.modId;
+            return ModId == other.ModId;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(modId, modName, modVersion);
+            return HashCode.Combine(ModId, ModName, ModVersion);
         }
     }
 }

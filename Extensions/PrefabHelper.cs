@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using Colossal.Entities;
 using Colossal.IO.AssetDatabase;
 using Colossal.OdinSerializer;
@@ -104,7 +106,9 @@ namespace StarQ.Shared.Extensions
                     return true;
             }
 
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             prefabBase = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             return false;
         }
 
@@ -148,6 +152,36 @@ namespace StarQ.Shared.Extensions
             return false;
         }
 
+        static readonly ConstructorInfo s_ResolverInfo = typeof(PrefabAsset)
+            .GetNestedType("PrefabReferenceResolver", BindingHelper.All)
+            .GetConstructors(BindingHelper.All)
+            .First(c => c.GetParameters().Length == 5);
+
+        static readonly FieldInfo s_DefaultConfig = typeof(PrefabAsset).GetField(
+            "kDefaultSerializationConfig",
+            BindingHelper.All
+        );
+
+        static DeserializationContext CreateContext(PrefabAsset asset)
+        {
+            object resolver = s_ResolverInfo.Invoke(
+                new object[]
+                {
+                    asset.database,
+                    Array.Empty<IAssetDatabase>(),
+                    asset,
+                    null,
+                    new HashSet<PrefabAsset>(),
+                }
+            );
+
+            return new DeserializationContext
+            {
+                Config = (SerializationConfig)s_DefaultConfig.GetValue(null),
+                StringReferenceResolver = (IExternalStringReferenceResolver)resolver,
+            };
+        }
+
         public static bool TryGetOriginal(PrefabBase current, out PrefabBase? original)
         {
             original = null;
@@ -155,13 +189,16 @@ namespace StarQ.Shared.Extensions
             if (pbAsset == null)
                 return false;
 
+            DeserializationContext deserializationContext = CreateContext(pbAsset);
+
             try
             {
                 using Stream readStream = pbAsset.GetReadStream();
                 ContentType contentType = GetPrefabContentType(current);
                 object obj = SerializationUtility.DeserializeValueWeak(
                     readStream,
-                    (DataFormat)contentType
+                    (DataFormat)contentType,
+                    deserializationContext
                 );
                 original = (PrefabBase)obj;
                 return true;

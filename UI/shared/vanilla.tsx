@@ -1,4 +1,4 @@
-import { ToggleField, UISound } from "cs2/bindings";
+import { Color, ToggleField, UISound } from "cs2/bindings";
 import { StyleProps } from "cs2/input";
 import { getModule } from "cs2/modding";
 import { ButtonProps, FocusKey, ScrollController } from "cs2/ui";
@@ -172,3 +172,26 @@ export const CollapsiblePanel = getModule(
   "game-ui/common/panel/collapsible-panel.tsx",
   "CollapsiblePanel",
 ) as React.FC<CollapsiblePanelProps>;
+
+type ColorFieldProps = {
+  focusKey?: FocusKey;
+  disabled?: boolean;
+  value: Color;
+  className?: string;
+  selectAction?: string;
+  alpha?: boolean;
+  popupDirection?: "up" | "down" | "left" | "right";
+  hideHint?: boolean;
+  colorWheel?: boolean;
+  hexInput?: boolean;
+  onChange?: (value: Color) => void;
+  onClick?: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+  onClosePicker?: () => void;
+};
+
+export const ColorField = getModule(
+  "game-ui/common/input/color-picker/color-field/color-field.tsx",
+  "ColorField",
+) as React.FC<ColorFieldProps>;

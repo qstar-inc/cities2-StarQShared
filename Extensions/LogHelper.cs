@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -28,11 +29,16 @@ namespace StarQ.Shared.Extensions
     public static class LogHelper
     {
         private static string _id = "Unknown";
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         private static ILog _log;
         private static string _logPath;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
         private static string _logText = "";
         private static DateTime _lastReadTime = DateTime.MinValue;
+        private const int MaxLogLines = 200;
+        private const string TruncationNotice =
+            "Log file is too large, open the log file to read the remaining.";
 
         private static readonly Regex PrefixRegex = new(
             @"^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\] \[[A-Z]+\]\s*",
@@ -47,7 +53,7 @@ namespace StarQ.Shared.Extensions
             _log = log;
             _logPath = Path.Combine(EnvPath.kUserDataPath, "Logs", $"{_id}.log");
 
-            _logText = $"{_id}.Mod.NoLog";
+            _logText = $"{_id}.NoLog";
 
             UpdateLogText();
             SendLog($"Starting {_id} at {DateTime.Now}", LogLevel.DEV);
@@ -127,14 +133,44 @@ namespace StarQ.Shared.Extensions
 
                 _lastReadTime = writeTime;
 
-                string original = File.ReadAllText(_logPath);
+                var lines = new List<string>(MaxLogLines);
+                bool truncated = false;
 
-                _logText = PrefixRegex.Replace(original, "");
+                using (
+                    var stream = new FileStream(
+                        _logPath,
+                        FileMode.Open,
+                        FileAccess.Read,
+                        FileShare.ReadWrite
+                    )
+                )
+                using (var reader = new StreamReader(stream))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        if (lines.Count >= MaxLogLines)
+                        {
+                            truncated = true;
+                            break;
+                        }
+                        lines.Add(line);
+                    }
+                }
+
+                string original = string.Join(Environment.NewLine, lines);
+                string cleaned = PrefixRegex.Replace(original, "");
+
+                _logText = truncated ? cleaned + Environment.NewLine + TruncationNotice : cleaned;
             }
             catch (Exception) { }
         }
 
-        public static void OpenLogFile() =>
+        public static void OpenLogFile()
+        {
+            if (!CheckLogFile())
+                return;
+
             Task.Run(() =>
             {
                 try
@@ -146,6 +182,20 @@ namespace StarQ.Shared.Extensions
                     SendLog(ex);
                 }
             });
+        }
+
+        public static bool CheckLogFile()
+        {
+            try
+            {
+                return !File.Exists(_logPath);
+            }
+            catch (Exception e)
+            {
+                SendLog(e);
+                return true;
+            }
+        }
 
         public static void SendLog(bool boolean, LogLevel level = LogLevel.Info) =>
             SendLog(boolean.ToString(), level);

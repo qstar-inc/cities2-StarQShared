@@ -155,7 +155,7 @@ namespace {ns}
         [SettingsUIHidden]
         public bool IsLogMissing
         {{
-            get => VariableHelper.CheckLog(Mod.Id);
+            get => LogHelper.CheckLogFile();
         }}
 
         [SettingsUIButton]
@@ -163,7 +163,7 @@ namespace {ns}
         [SettingsUISection(LogTab, """")]
         public bool OpenLog
         {{
-            set => VariableHelper.OpenLog(Mod.Id);
+            set => LogHelper.OpenLogFile();
         }}
     }}
 }}";

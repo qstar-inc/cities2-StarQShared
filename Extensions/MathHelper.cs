@@ -31,5 +31,16 @@ namespace StarQ.Shared.Extensions
             int value,
             NumberFormat numberFormat = NumberFormat.TwoDPMax
         ) => ConvertToString((float)value, numberFormat);
+
+        public static double Float2Double(float value)
+        {
+            if (float.IsNaN(value) || float.IsInfinity(value))
+                return 0;
+
+            return double.Parse(
+                value.ToString("R", CultureInfo.InvariantCulture),
+                CultureInfo.InvariantCulture
+            );
+        }
     }
 }

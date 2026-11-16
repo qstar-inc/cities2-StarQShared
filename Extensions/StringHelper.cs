@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace StarQ.Shared.Extensions
@@ -54,14 +56,17 @@ namespace StarQ.Shared.Extensions
             return string.Join(", ", parts) + suffix;
         }
 
-        public static string RemoveLineBreakesAndTrim(string text)
-        {
-            return text.Replace("\r", "").Replace("\n", "").Trim();
-        }
+        public static string RemoveLineBreakesAndTrim(string text) =>
+            text.Replace("\r", "").Replace("\n", "").Trim();
 
-        public static string ToDisplayName(string value)
-        {
-            return Regex.Replace(value, "(?<!^)([A-Z])", " $1");
-        }
+        private static readonly Regex DisplayNameRegex = new(
+            @"(?<=[a-z])(?=[A-Z])" + @"|(?<=[A-Z])(?=[A-Z][a-z])" + @"|(?<=[A-Za-z])(?=\d)",
+            RegexOptions.Compiled
+        );
+
+        public static string ToDisplayName(this string text) => DisplayNameRegex.Replace(text, " ");
+
+        public static string SanitizeTextForPath(string text) =>
+            string.Concat(text.Select(c => Path.GetInvalidFileNameChars().Contains(c) ? '_' : c));
     }
 }

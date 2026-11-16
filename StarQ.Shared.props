@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <Configurations>Debug;Release</Configurations>
-    <GameVersion>1.6.2*</GameVersion>
+    <GameVersion>1.6.4*</GameVersion>
     <ForumLink>https://forum.paradoxplaza.com/forum/threads/starq-mods-assets-projects-megathread.1930389/</ForumLink>
     <Authors>StarQ</Authors>
     <PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
@@ -14,6 +14,10 @@
       OutputItemType="Analyzer"
       ReferenceOutputAssembly="false"
     />
+    <PackageReference Include="Microsoft.Unity.Analyzers" Version="1.28.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(ModPropsFile)" Link="Properties\Mod.props" />

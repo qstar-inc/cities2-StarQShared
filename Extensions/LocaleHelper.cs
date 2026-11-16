@@ -11,12 +11,14 @@ namespace StarQ.Shared.Extensions
 {
     public static class LocaleHelper
     {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         private static string Id;
         private static string ModName;
         private static Regex regex;
         private static Func<Dictionary<string, string>> GetReplacements;
         private static Action AddLocale;
         public static LocalizationManager localizationManager;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
         public static Dictionary<string, string> translationCache = new();
 
@@ -25,9 +27,11 @@ namespace StarQ.Shared.Extensions
 
         public static void Init(
             string modId,
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             string modName = null,
             Func<Dictionary<string, string>> getReplacements = null,
             Action addLocale = null
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         )
         {
             Id = modId;
@@ -53,7 +57,7 @@ namespace StarQ.Shared.Extensions
 
         private static readonly ConcurrentDictionary<string, string> replacedStrings = new();
 
-        public static string Translate(string id, string fallback = null)
+        public static string Translate(string id, string? fallback = null)
         {
             if (translationCache.TryGetValue(id, out var cached))
                 return cached;
@@ -107,25 +111,25 @@ namespace StarQ.Shared.Extensions
 
         public static string GetSubserviceName(string id) => Translate($"SubServices.NAME[{id}]");
 
-        public static string GetOptionsTabLocaleId(string id, string modId = null)
+        public static string GetOptionsTabLocaleId(string id, string? modId = null)
         {
             modId ??= Id;
             return $"Options.TAB[{modId}.{modId}.Mod.{id}]";
         }
 
-        public static string GetOptionsGroupLocaleId(string id, string modId = null)
+        public static string GetOptionsGroupLocaleId(string id, string? modId = null)
         {
             modId ??= Id;
             return $"Options.GROUP[{modId}.{modId}.Mod.{id}]";
         }
 
-        public static string GetOptionsLabelLocaleId(string id, string modId = null)
+        public static string GetOptionsLabelLocaleId(string id, string? modId = null)
         {
             modId ??= Id;
             return $"Options.OPTION[{modId}.{modId}.Mod.Setting.{id}]";
         }
 
-        public static string GetOptionsDescLocaleId(string id, string modId = null)
+        public static string GetOptionsDescLocaleId(string id, string? modId = null)
         {
             modId ??= Id;
             return $"Options.OPTION_DESCRIPTION[{modId}.{modId}.Mod.Setting.{id}]";
@@ -134,7 +138,7 @@ namespace StarQ.Shared.Extensions
         public static string GetOptionsEnumLocaleId(
             string enumGroup,
             string enumValue,
-            string modId = null
+            string? modId = null
         )
         {
             modId ??= Id;

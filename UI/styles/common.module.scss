@@ -183,3 +183,60 @@
 .Flex {
   display: flex !important;
 }
+
+.FlexVertical {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.ButtonGroup {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 0 !important;
+}
+
+.ButtonGroup + .ButtonGroup {
+  margin-left: 10rem !important;
+}
+
+.ButtonGroup > :global(.button_yDV) {
+  border-radius: 0 !important;
+  flex: 1 1 0 !important;
+  width: auto !important;
+}
+
+.ButtonGroup > :global(.button_yDV):first-child {
+  border-top-left-radius: 4rem !important;
+  border-bottom-left-radius: 4rem !important;
+}
+
+.ButtonGroup > :global(.button_yDV):last-child {
+  border-top-right-radius: 4rem !important;
+  border-bottom-right-radius: 4rem !important;
+}
+
+.ButtonGroup > :global(.button_yDV) + :global(.button_yDV) {
+  border-left: 1rem solid rgba(255, 255, 255, 0.15) !important;
+  margin: 0 !important;
+}
+
+.W100 {
+  width: 100% !important;
+}
+
+.Input {
+  text-align: right !important;
+}
+
+.InputDrag {
+  cursor: url(cursor://horizontal-resize) !important;
+}
+
+.InputDragging {
+  user-select: none !important;
+}
+
+.BackgroundDark {
+  background-color: var(--panelColorDark) !important;
+}

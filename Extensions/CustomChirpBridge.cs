@@ -74,8 +74,8 @@ namespace StarQ.Shared.Extensions
             EnsureResolve();
 
             var realDept = MapDepartment(department);
-            var args = new object[] { text ?? string.Empty, realDept, entity, customSenderName };
-            _postChirp.Invoke(null, args);
+            var args = new object[] { text ?? string.Empty, realDept, entity, customSenderName! };
+            _postChirp?.Invoke(null, args);
             return true;
         }
 

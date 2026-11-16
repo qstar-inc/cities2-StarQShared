@@ -69,7 +69,7 @@ namespace StarQ.Shared.Extensions
                 if (method == null)
                     return true;
 
-                object[] args = { null, 128 };
+                object[] args = { null!, 128 };
                 bool betaCheck = (bool)method.Invoke(null, args);
 
                 if (betaCheck)
@@ -218,24 +218,6 @@ namespace StarQ.Shared.Extensions
                 return;
 
             await GetLoggedInUserName();
-        }
-
-        public static async Task<IModsUploadSupport.ModInfo?> GetModDetail(
-            IModsUploadSupport.ModInfo mod
-        )
-        {
-            PdxSdkPlatform manager = GetManager();
-
-            try
-            {
-                IModsUploadSupport.ModInfo result = await manager.GetDetails(mod, null, null);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                LogHelper.SendLog(ex);
-            }
-            return null;
         }
     }
 }

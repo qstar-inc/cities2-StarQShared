@@ -12,13 +12,17 @@ namespace StarQ.Shared.Extensions
             LocalizedString title,
             LocalizedString message,
             LocalizedString confirmAction,
-            Action<int> action
+            Action<int> action,
+            bool log = true,
+            LogLevel logLevel = LogLevel.Info
         )
         {
             GameManager.instance.userInterface.appBindings.ShowMessageDialog(
                 new MessageDialog(title, message, confirmAction),
                 action
             );
+            if (log)
+                LogHelper.SendLog(message.value, logLevel);
         }
 
         public static void ShowConfirmationDialog(

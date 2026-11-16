@@ -1,6 +1,19 @@
 .Container {
-  position: relative;
-  overflow: hidden;
+  position: relative !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important ;
+  max-height: inherit !important; // or whatever bounds it now
+}
+
+.Body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+}
+
+.Footer {
+  flex: 0 0 auto !important;
 }
 
 .View {

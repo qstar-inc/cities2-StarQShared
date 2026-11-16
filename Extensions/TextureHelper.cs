@@ -9,7 +9,7 @@ namespace StarQ.Shared.Extensions
             out byte[] data
         )
         {
-            data = null;
+            data = new byte[0];
 
             FileFormat ff = FileFormat.PNG;
 

@@ -42,23 +42,5 @@ namespace StarQ.Shared.Extensions
             return version;
 #endif
         }
-
-        public static Task OpenLog(string id)
-        {
-            return Task.Run(() => Process.Start($"{EnvPath.kUserDataPath}/Logs/{id}.log"));
-        }
-
-        public static bool CheckLog(string id)
-        {
-            try
-            {
-                return !System.IO.File.Exists($"{EnvPath.kUserDataPath}/Logs/{id}.log");
-            }
-            catch (Exception e)
-            {
-                LogHelper.SendLog(e);
-                return true;
-            }
-        }
     }
 }
