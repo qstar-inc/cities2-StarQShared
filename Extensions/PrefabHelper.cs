@@ -55,14 +55,19 @@ namespace StarQ.Shared.Extensions
             out PrefabBase prefabBase
         )
         {
-            PrefabID prefabID = new(pType, pName, pGuid);
+            prefabBase = null!;
 
-            if (WorldHelper.PrefabSystem.TryGetPrefab(prefabID, out prefabBase))
+            PrefabSystem prefabSystem = WorldHelper.PrefabSystem;
+            if (prefabSystem == null)
+            {
+                LogHelper.SendLog("PrefabSystem not available yet");
+                return false;
+            }
+
+            if (prefabSystem.TryGetPrefab(new PrefabID(pType, pName, pGuid), out prefabBase))
                 return true;
 
-            prefabID = new(pType, pName, default);
-
-            if (WorldHelper.PrefabSystem.TryGetPrefab(prefabID, out prefabBase))
+            if (prefabSystem.TryGetPrefab(new PrefabID(pType, pName, default), out prefabBase))
                 return true;
 
             if (TryGetPrefabByType(pType, pName, out prefabBase))
@@ -77,38 +82,33 @@ namespace StarQ.Shared.Extensions
             string pName,
             string pGuid,
             out PrefabBase prefabBase
-        )
-        {
-            if (pGuid == "" | pGuid == null | pGuid == string.Empty)
-                return TryGetPrefab(pType, pName, (Colossal.Hash128)(default), out prefabBase);
-
-            return TryGetPrefab(pType, pName, Colossal.Hash128.Parse(pGuid), out prefabBase);
-        }
+        ) =>
+            TryGetPrefab(
+                pType,
+                pName,
+                string.IsNullOrEmpty(pGuid) ? default : Colossal.Hash128.Parse(pGuid),
+                out prefabBase
+            );
 
         public static bool TryGetPrefab(string pType, string pName, out PrefabBase prefabBase) =>
             TryGetPrefab(pType, pName, (Colossal.Hash128)(default), out prefabBase);
 
         public static bool TryGetPrefabByType(string pType, string pName, out PrefabBase prefabBase)
         {
-            var pm = AssetDatabase.global.GetAssets<PrefabAsset>();
-            Dictionary<string, PrefabBase> prefabAssets = new();
-            foreach (var pmItem in pm)
+            prefabBase = null!;
+            foreach (PrefabAsset pa in AssetDatabase.global.GetAssets<PrefabAsset>())
             {
-                prefabBase = pmItem.GetInstance<PrefabBase>();
+                PrefabBase pbTemp = pa.GetInstance<PrefabBase>();
 
-                if (pType == nameof(BuildingPrefab) && prefabBase is not BuildingPrefab)
+                if (pbTemp == null || pbTemp.GetType().Name != pType)
                     continue;
 
-                if (pType == nameof(StaticObjectPrefab) && prefabBase is not StaticObjectPrefab)
-                    continue;
-
-                if (prefabBase.name == pName)
+                if (pbTemp.name == pName)
+                {
+                    prefabBase = pbTemp;
                     return true;
+                }
             }
-
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            prefabBase = null;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             return false;
         }
 
