@@ -2,7 +2,6 @@
   <PropertyGroup>
     <Configurations>Debug;Release</Configurations>
     <GameVersion>1.6.4*</GameVersion>
-    <ForumLink>https://forum.paradoxplaza.com/forum/threads/starq-mods-assets-projects-megathread.1930389/</ForumLink>
     <Authors>StarQ</Authors>
     <PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
     <CrowdinSync>false</CrowdinSync>

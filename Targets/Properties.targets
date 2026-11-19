@@ -38,10 +38,6 @@
       Value="$(GameVersion)"
       Query="//GameVersion/@Value"
     />
-    <XmlPoke
-      XmlInputPath="$(PublishConfigurationPath)"
-      Value="$(ForumLink)"
-      Query="//ForumLink/@Value"
-    />
+    <XmlPoke XmlInputPath="$(PublishConfigurationPath)" Value="" Query="//ForumLink/@Value" />
   </Target>
 </Project>
