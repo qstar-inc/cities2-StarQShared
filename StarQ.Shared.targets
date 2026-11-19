@@ -1,5 +1,6 @@
 <Project>
   <Import Project="$(CS2_STARQ_SHARED_PATH)/Targets/BuildUI.targets" />
+  <Import Project="$(CS2_STARQ_SHARED_PATH)/Targets/Discord.targets" />
   <Import Project="$(CS2_STARQ_SHARED_PATH)/Targets/DeployResources.targets" />
   <Import Project="$(CS2_STARQ_SHARED_PATH)/Targets/FirstInit.targets" />
   <Import Project="$(CS2_STARQ_SHARED_PATH)/Targets/Generators.targets" />

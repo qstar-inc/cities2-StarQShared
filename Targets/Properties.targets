@@ -17,10 +17,34 @@
     />
   </Target>
 
-  <Target Name="SetupAttributes" BeforeTargets="BeforeBuild">
+  <Target Name="SetupAttributes" BeforeTargets="BeforeBuild" DependsOnTargets="ResolveDiscord">
+    <PropertyGroup>
+      <_RepoUrl>https://github.com/qstar-inc/cities2-$(AssemblyName)</_RepoUrl>
+      <_DevlogPath>$(MSBuildProjectDirectory)\Devlog.md</_DevlogPath>
+      <_FooterPath>$(CS2_STARQ_SHARED_PATH)\Footer.md</_FooterPath>
+      <_LongDesc>$([MSBuild]::Escape($([System.IO.File]::ReadAllText('$(MSBuildProjectDirectory)\Properties\LongDescription.md').TrimEnd())))</_LongDesc>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="Exists('$(_DevlogPath)')">
+      <_LongDesc>$(_LongDesc)%0A%0ARead the DEVLOG for this project here: $(_RepoUrl)/blob/master/Devlog.md</_LongDesc>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="Exists('$(_FooterPath)')">
+      <_Footer>$([MSBuild]::Escape($([System.IO.File]::ReadAllText('$(_FooterPath)').TrimEnd().Replace('{CSM_THREAD}', '$(CSMThreadId)').Replace('{BUILD_DATE}', '$(BuildDateUtc)'))))</_Footer>
+      <_LongDesc>$(_LongDesc)%0A%0A$(_Footer)</_LongDesc>
+    </PropertyGroup>
+
+    <PatchPublishConfiguration
+      ConfigPath="$(PublishConfigurationPath)"
+      GithubUrl="$(_RepoUrl)"
+      DiscordUrl="https://discord.gg/U2PSjUzUuF"
+      BuyMeACoffeeUrl="https://buymeacoffee.com/starq"
+      CrowdinUrl="https://crowdin.com/project/starq-cities2"
+    />
+
     <XmlPoke
       XmlInputPath="$(PublishConfigurationPath)"
-      Value="$([System.IO.File]::ReadAllText($(MSBuildProjectDirectory)\Properties\LongDescription.md))"
+      Value="$(_LongDesc)"
       Query="//LongDescription"
     />
     <XmlPoke
@@ -40,4 +64,53 @@
     />
     <XmlPoke XmlInputPath="$(PublishConfigurationPath)" Value="" Query="//ForumLink/@Value" />
   </Target>
+
+  <UsingTask
+    TaskName="PatchPublishConfiguration"
+    TaskFactory="RoslynCodeTaskFactory"
+    AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll"
+  >
+    <ParameterGroup>
+      <ConfigPath ParameterType="System.String" Required="true" />
+      <GithubUrl ParameterType="System.String" Required="false" />
+      <DiscordUrl ParameterType="System.String" Required="false" />
+      <BuyMeACoffeeUrl ParameterType="System.String" Required="false" />
+      <CrowdinUrl ParameterType="System.String" Required="false" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.Xml" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+var doc = new XmlDocument();
+doc.PreserveWhitespace = true;
+doc.Load(ConfigPath);
+XmlElement root = doc.DocumentElement;
+
+// Remove every AccessLevel tag
+XmlNode a;
+while ((a = root.SelectSingleNode("//AccessLevel")) != null)
+    a.ParentNode.RemoveChild(a);
+
+// Ensure each ExternalLink type exists and has the right URL
+string[] types = { "github", "discord", "buymeacoffee", "crowdin" };
+string[] urls = { GithubUrl, DiscordUrl, BuyMeACoffeeUrl, CrowdinUrl };
+for (int i = 0; i < types.Length; i++)
+{
+    if (string.IsNullOrEmpty(urls[i])) continue;
+    XmlElement el = (XmlElement)root.SelectSingleNode("//ExternalLink[@Type='" + types[i] + "']");
+    if (el == null)
+    {
+        el = doc.CreateElement("ExternalLink");
+        el.SetAttribute("Type", types[i]);
+        XmlNode last = root.SelectSingleNode("(//ExternalLink)[last()]");
+        if (last != null) root.InsertAfter(el, last);
+        else root.AppendChild(el);
+    }
+    el.SetAttribute("Url", urls[i]);
+}
+doc.Save(ConfigPath);
+]]>
+      </Code>
+    </Task>
+  </UsingTask>
 </Project>

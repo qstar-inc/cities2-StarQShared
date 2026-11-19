@@ -96,14 +96,13 @@ namespace {ns}
 
         public const string LogTab = ""LogTab"";
 
-        [SettingsUISection(AboutTab, InfoGroup)]
-        public string NameText => Mod.Name;
+        public static LocalizedString TitleText =>
+            LocalizedString.Id($""<{{Mod.Name}}> ({{VariableHelper.AddDevSuffix(Mod.Version)}}) by **{{VariableHelper.StarQ}}**"");
 
+        [SettingsUIMultilineText]
+        [SettingsUIDisplayName(typeof(Setting), nameof(TitleText))]
         [SettingsUISection(AboutTab, InfoGroup)]
-        public string VersionText => VariableHelper.AddDevSuffix(Mod.Version);
-
-        [SettingsUISection(AboutTab, InfoGroup)]
-        public string AuthorText => VariableHelper.StarQ;
+        public string Title => string.Empty;
 
         [SettingsUIButton]
         [SettingsUIButtonGroup(""Social"")]
@@ -116,18 +115,29 @@ namespace {ns}
         [SettingsUIButton]
         [SettingsUIButtonGroup(""Social"")]
         [SettingsUISection(AboutTab, InfoGroup)]
-        [SettingsUIDisplayName(overrideValue: ""Discord"")]
-        public bool Discord
+        public bool ParadoxForum
         {{
-            set => VariableHelper.OpenDiscord(Mod.Id);
+            set => VariableHelper.OpenParadoxForum();
         }}
 
         [SettingsUIButton]
         [SettingsUIButtonGroup(""Social"")]
         [SettingsUISection(AboutTab, InfoGroup)]
-        public bool ParadoxForum
+        [SettingsUIDisplayName(overrideValue: ""CSM Discord"")]
+        [SettingsUIDescription(overrideValue: ""Cities: Skylines Modding Discord Server"")]
+        public bool CSMDiscord
         {{
-            set => VariableHelper.OpenParadoxForum();
+            set => VariableHelper.OpenCSMDiscord(Mod.Id);
+        }}
+
+        [SettingsUIButton]
+        [SettingsUIButtonGroup(""Social"")]
+        [SettingsUISection(AboutTab, InfoGroup)]
+        [SettingsUIDisplayName(overrideValue: ""StarQ Discord"")]
+        [SettingsUIDescription(overrideValue: ""StarQ Discord Server"")]
+        public bool StarQDiscord
+        {{
+            set => VariableHelper.OpenStarQDiscord();
         }}
 
         public static LocalizedString AboutModText =>

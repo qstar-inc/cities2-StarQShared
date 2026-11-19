@@ -1,0 +1,43 @@
+<Project>
+  <PropertyGroup>
+    <CSMThread__Default>1530639133112930565</CSMThread__Default>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <CSMThread Include="AdvancedBuildingControl" Id="1464858378747645983" />
+    <CSMThread Include="AssetMigrationUtility" Id="1518597681939878141" />
+    <CSMThread Include="AssetUIManager" Id="1518565970682052628" />
+    <CSMThread Include="MeshStatsViewer" Id="1519761704991330435" />
+    <CSMThread Include="RailVehicleTuner" Id="1490730915717189844" />
+    <CSMThread Include="SimpleModCheckerPlus" Id="1518525133730353273" />
+  </ItemGroup>
+
+  <Target Name="ResolveDiscord">
+    <ItemGroup>
+      <_CSMMatch Include="@(CSMThread)" Condition="'%(Identity)' == '$(AssemblyName)'" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <CSMThreadId>%(_CSMMatch.Id)</CSMThreadId>
+      <CSMThreadId Condition="'$(CSMThreadId)' == ''">$(CSMThread__Default)</CSMThreadId>
+      <BuildDateUtc>$([System.DateTime]::UtcNow.ToString('yyyy-MM-dd HH:mm')) UTC</BuildDateUtc>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_CSMMatch Remove="@(_CSMMatch)" />
+    </ItemGroup>
+  </Target>
+
+  <Target
+    Name="AddDiscordMetadata"
+    DependsOnTargets="ResolveDiscord"
+    BeforeTargets="GenerateAssemblyInfo"
+  >
+    <ItemGroup>
+      <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+        <_Parameter1>CSMThread</_Parameter1>
+        <_Parameter2>$(CSMThreadId)</_Parameter2>
+      </AssemblyAttribute>
+    </ItemGroup>
+  </Target>
+</Project>

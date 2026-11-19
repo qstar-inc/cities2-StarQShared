@@ -320,10 +320,6 @@ namespace StarQ.Shared.Extensions
                     "Menu.ASSET_EXTERNAL_LINK_TYPE[buymeacoffee]"
                 ),
 
-                [GetOptionsLabelLocaleId("Discord")] = Translate(
-                    "Menu.ASSET_EXTERNAL_LINK_TYPE[discord]"
-                ),
-
                 [GetOptionsLabelLocaleId("ParadoxForum")] = Translate(
                     "Menu.ASSET_FORUM_LINK_LABEL"
                 ),

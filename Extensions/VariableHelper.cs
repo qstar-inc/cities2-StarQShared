@@ -1,35 +1,33 @@
 using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using Colossal.PSI.Environment;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace StarQ.Shared.Extensions
 {
     public class VariableHelper
     {
-        public static string StarQ = "StarQ / Qoushik";
-        public static string ServerID_CSM = "1024242828114673724";
+        public const string StarQ = "StarQ / Qoushik";
+        public const string ServerID_CSM = "1024242828114673724";
+        private const string DefaultCSMThread = "1530639133112930565";
         public static Action<string> OpenURL = url => Application.OpenURL($"{url}");
         public static Action OpenBMAC = () => OpenURL($"https://buymeacoffee.com/starq");
         public static Action OpenParadoxForum = () =>
             OpenURL($"https://forum.paradoxplaza.com/forum/threads/1930389/");
 
-        //public static Action<string> OpenDiscord = channel =>
-        //    OpenURL($"https://discord.com/channels/1024242828114673724/{channel}");
+        public static void OpenStarQDiscord() => OpenURL($"https://discord.gg/U2PSjUzUuF");
 
-        public static void OpenDiscord(string group)
+        public static void OpenCSMDiscord(string group)
         {
-            string channel = group switch
-            {
-                "SimpleModCheckerPlus" => "1518525133730353273",
-                "AssetUIManager" => "1518565970682052628",
-                "AdvancedBuildingControl" => "1464858378747645983",
-                "AssetMigrationUtility" => "1518597681939878141",
-                "RailVehicleTuner" => "1490730915717189844",
-                "MeshStatsViewer" => "1519761704991330435",
-                _ => "1530639133112930565",
-            };
+            string channel = AppDomain
+                .CurrentDomain.GetAssemblies()
+                .FirstOrDefault(a => a.GetName().Name == group)
+                ?.GetCustomAttributes<AssemblyMetadataAttribute>()
+                .FirstOrDefault(a => a.Key == "CSMThread")
+                ?.Value;
+
+            if (string.IsNullOrEmpty(channel))
+                channel = DefaultCSMThread;
 
             OpenURL($"https://discord.com/channels/{ServerID_CSM}/{channel}");
         }
