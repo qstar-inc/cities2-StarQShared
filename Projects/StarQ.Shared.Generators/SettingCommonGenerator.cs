@@ -105,7 +105,7 @@ namespace {ns}
         public string Title => string.Empty;
 
         [SettingsUIButton]
-        [SettingsUIButtonGroup(""Social"")]
+        [SettingsUIButtonGroup(""Social1"")]
         [SettingsUISection(AboutTab, InfoGroup)]
         public bool BMaCLink
         {{
@@ -113,7 +113,7 @@ namespace {ns}
         }}
 
         [SettingsUIButton]
-        [SettingsUIButtonGroup(""Social"")]
+        [SettingsUIButtonGroup(""Social1"")]
         [SettingsUISection(AboutTab, InfoGroup)]
         public bool ParadoxForum
         {{
@@ -121,7 +121,7 @@ namespace {ns}
         }}
 
         [SettingsUIButton]
-        [SettingsUIButtonGroup(""Social"")]
+        [SettingsUIButtonGroup(""Social2"")]
         [SettingsUISection(AboutTab, InfoGroup)]
         [SettingsUIDisplayName(overrideValue: ""CSM Discord"")]
         [SettingsUIDescription(overrideValue: ""Cities: Skylines Modding Discord Server"")]
@@ -131,7 +131,7 @@ namespace {ns}
         }}
 
         [SettingsUIButton]
-        [SettingsUIButtonGroup(""Social"")]
+        [SettingsUIButtonGroup(""Social2"")]
         [SettingsUISection(AboutTab, InfoGroup)]
         [SettingsUIDisplayName(overrideValue: ""StarQ Discord"")]
         [SettingsUIDescription(overrideValue: ""StarQ Discord Server"")]
@@ -156,9 +156,37 @@ namespace {ns}
         //[SettingsUISection(AboutTab, """")]
         //public string Changelog => string.Empty;
 
+        private bool _debugLogging;
+
+        [SettingsUIDisplayName(overrideValue: ""Enable Debug Logging"")]
+        [SettingsUIDescription(
+            overrideValue: ""Enable debug logging for troubleshooting. Disable it afterward.""
+        )]
+        [SettingsUISection(LogTab, ""1"")]
+        public bool DebugLogging
+        {{
+            get => _debugLogging;
+            set
+            {{
+                _debugLogging = value;
+                LogHelper.ReleaseDebug = value;
+                StarQHelper.SendDebugNotification(value);
+                LogHelper.SendLog($""Debug Logging {{(value ? ""enabled"" : ""disabled"")}}"");
+                
+            }}
+        }}
+
+        [SettingsUIButton]
+        [SettingsUIDisableByCondition(typeof(Setting), nameof(IsLogMissing))]
+        [SettingsUISection(LogTab, ""2"")]
+        public bool OpenLog
+        {{
+            set => LogHelper.OpenLogFile();
+        }}
+
         [SettingsUIMultilineText]
         [SettingsUIDisplayName(typeof(LogHelper), nameof(LogHelper.LogText))]
-        [SettingsUISection(LogTab, """")]
+        [SettingsUISection(LogTab, ""2"")]
         public string LogText => string.Empty;
 
         [Exclude]
@@ -166,14 +194,6 @@ namespace {ns}
         public bool IsLogMissing
         {{
             get => LogHelper.CheckLogFile();
-        }}
-
-        [SettingsUIButton]
-        [SettingsUIDisableByCondition(typeof(Setting), nameof(IsLogMissing))]
-        [SettingsUISection(LogTab, """")]
-        public bool OpenLog
-        {{
-            set => LogHelper.OpenLogFile();
         }}
     }}
 }}";

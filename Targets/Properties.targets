@@ -26,7 +26,7 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="Exists('$(_DevlogPath)')">
-      <_LongDesc>$(_LongDesc)%0A%0ARead the DEVLOG for this project here: $(_RepoUrl)/blob/master/Devlog.md</_LongDesc>
+      <_LongDesc>$(_LongDesc)%0A%0ARead the DEVLOG for this project [here]($(_RepoUrl)/blob/master/Devlog.md).</_LongDesc>
     </PropertyGroup>
 
     <PropertyGroup Condition="Exists('$(_FooterPath)')">

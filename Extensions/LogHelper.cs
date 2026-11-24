@@ -28,14 +28,12 @@ namespace StarQ.Shared.Extensions
 
     public static class LogHelper
     {
-        private static string _id = "Unknown";
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-        private static ILog _log;
-        private static string _logPath;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+        private static ILog log;
+        private static string logPath;
 
-        private static string _logText = "";
-        private static DateTime _lastReadTime = DateTime.MinValue;
+        private static string logText = "";
+        private static DateTime lastReadTime = DateTime.MinValue;
+
         private const int MaxLogLines = 200;
         private const string TruncationNotice =
             "Log file is too large, open the log file to read the remaining.";
@@ -45,25 +43,23 @@ namespace StarQ.Shared.Extensions
             RegexOptions.Multiline | RegexOptions.Compiled
         );
 
-        public static LocalizedString LogText => LocalizedString.Id(_logText);
+        public static bool ReleaseDebug = false;
+        public static LocalizedString LogText => LocalizedString.Id(logText);
 
-        public static void Init(string id, ILog log)
+        public static void Init(ILog log)
         {
-            _id = id;
-            _log = log;
-            _logPath = Path.Combine(EnvPath.kUserDataPath, "Logs", $"{_id}.log");
+            LogHelper.log = log;
+            logPath = Path.Combine(EnvPath.kUserDataPath, "Logs", $"{StarQHelper.Id}.log");
 
-            _logText = $"{_id}.NoLog";
+            logText = $"{StarQHelper.Id}.NoLog";
 
             UpdateLogText();
-            SendLog($"Starting {_id} at {DateTime.Now}", LogLevel.DEV);
+            SendLog($"Starting {StarQHelper.Id} at {DateTime.Now}", LogLevel.DEV);
         }
-
-        public static string GetId() => _id;
 
         public static void SendLog(string message, LogLevel level = LogLevel.Info)
         {
-            if (_log == null)
+            if (log == null)
                 return;
 
             string text = message ?? "null";
@@ -71,31 +67,31 @@ namespace StarQ.Shared.Extensions
             switch (level)
             {
                 case LogLevel.Verbose:
-                    _log.Verbose(text);
+                    log.Verbose(text);
                     break;
                 case LogLevel.Trace:
-                    _log.Trace(text);
+                    log.Trace(text);
                     break;
                 case LogLevel.Debug:
-                    _log.Debug(text);
+                    log.Debug(text);
                     break;
                 case LogLevel.Info:
-                    _log.Info(text);
+                    log.Info(text);
                     break;
                 case LogLevel.Warn:
-                    _log.Warn(text);
+                    log.Warn(text);
                     break;
                 case LogLevel.Error:
-                    _log.Error(text);
+                    log.Error(text);
                     break;
                 case LogLevel.Critical:
-                    _log.Critical(text);
+                    log.Critical(text);
                     break;
                 case LogLevel.Fatal:
-                    _log.Fatal(text);
+                    log.Fatal(text);
                     break;
                 case LogLevel.Emergency:
-                    _log.Emergency(text);
+                    log.Emergency(text);
                     break;
                 case LogLevel.DEV:
 #if DEBUG
@@ -108,11 +104,14 @@ namespace StarQ.Shared.Extensions
 #if DEBUG
                     _log.Info(text);
 #else
-                    _log.Debug(text);
+                    if (ReleaseDebug)
+                        log.Info(text);
+                    else
+                        log.Debug(text);
 #endif
                     break;
                 default:
-                    _log.Info(text);
+                    log.Info(text);
                     break;
             }
 
@@ -123,22 +122,22 @@ namespace StarQ.Shared.Extensions
         {
             try
             {
-                if (!File.Exists(_logPath))
+                if (!File.Exists(logPath))
                     return;
 
-                DateTime writeTime = File.GetLastWriteTimeUtc(_logPath);
+                DateTime writeTime = File.GetLastWriteTimeUtc(logPath);
 
-                if (writeTime <= _lastReadTime)
+                if (writeTime <= lastReadTime)
                     return;
 
-                _lastReadTime = writeTime;
+                lastReadTime = writeTime;
 
                 var lines = new List<string>(MaxLogLines);
                 bool truncated = false;
 
                 using (
                     var stream = new FileStream(
-                        _logPath,
+                        logPath,
                         FileMode.Open,
                         FileAccess.Read,
                         FileShare.ReadWrite
@@ -161,7 +160,7 @@ namespace StarQ.Shared.Extensions
                 string original = string.Join(Environment.NewLine, lines);
                 string cleaned = PrefixRegex.Replace(original, "");
 
-                _logText = truncated ? cleaned + Environment.NewLine + TruncationNotice : cleaned;
+                logText = truncated ? cleaned + Environment.NewLine + TruncationNotice : cleaned;
             }
             catch (Exception) { }
         }
@@ -175,7 +174,7 @@ namespace StarQ.Shared.Extensions
             {
                 try
                 {
-                    Process.Start(_logPath);
+                    Process.Start(logPath);
                 }
                 catch (Exception ex)
                 {
@@ -184,18 +183,7 @@ namespace StarQ.Shared.Extensions
             });
         }
 
-        public static bool CheckLogFile()
-        {
-            try
-            {
-                return !File.Exists(_logPath);
-            }
-            catch (Exception e)
-            {
-                SendLog(e);
-                return true;
-            }
-        }
+        public static bool CheckLogFile() => !File.Exists(logPath);
 
         public static void SendLog(bool boolean, LogLevel level = LogLevel.Info) =>
             SendLog(boolean.ToString(), level);
@@ -264,7 +252,7 @@ namespace StarQ.Shared.Extensions
 
         private static string TrimPath(string stackTrace)
         {
-            if (string.IsNullOrEmpty(stackTrace) || string.IsNullOrEmpty(_id))
+            if (string.IsNullOrEmpty(stackTrace) || string.IsNullOrEmpty(StarQHelper.Id))
                 return stackTrace;
 
             var lines = stackTrace.Split('\n');
@@ -272,7 +260,8 @@ namespace StarQ.Shared.Extensions
             {
                 string line = lines[i].TrimEnd('\r');
 
-                string marker = Path.DirectorySeparatorChar + _id + Path.DirectorySeparatorChar;
+                string marker =
+                    Path.DirectorySeparatorChar + StarQHelper.Id + Path.DirectorySeparatorChar;
                 int idx = line.IndexOf(marker, StringComparison.Ordinal);
                 if (idx >= 0)
                 {

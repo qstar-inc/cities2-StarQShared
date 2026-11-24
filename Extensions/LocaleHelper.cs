@@ -11,14 +11,10 @@ namespace StarQ.Shared.Extensions
 {
     public static class LocaleHelper
     {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-        private static string Id;
-        private static string ModName;
         private static Regex regex;
         private static Func<Dictionary<string, string>> GetReplacements;
         private static Action AddLocale;
         public static LocalizationManager localizationManager;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
         public static Dictionary<string, string> translationCache = new();
 
@@ -26,27 +22,18 @@ namespace StarQ.Shared.Extensions
         private static Dictionary<string, string> toUpdate = new();
 
         public static void Init(
-            string modId,
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            string modName = null,
             Func<Dictionary<string, string>> getReplacements = null,
             Action addLocale = null
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         )
         {
-            Id = modId;
-            ModName = modName;
             GetReplacements = getReplacements;
             AddLocale = addLocale;
-            regex = new($@"(\{{{Regex.Escape(Id)}\.[\w.]+\}})", RegexOptions.Compiled);
+            regex = new($@"(\{{{Regex.Escape(StarQHelper.Id)}\.[\w.]+\}})", RegexOptions.Compiled);
             localizationManager = GameManager.instance.localizationManager;
             localizationManager.onActiveDictionaryChanged += OnActiveDictionaryChanged;
             OnActiveDictionaryChanged();
 
             LogHelper.SendLog("Initing LocaleHelper", LogLevel.DEV);
-#if DEBUG
-            Game.PSI.NotificationSystem.Push($"init-debug-{Id}", ModName, $"DEV build running");
-#endif
         }
 
         public static void Dispose()
@@ -113,25 +100,25 @@ namespace StarQ.Shared.Extensions
 
         public static string GetOptionsTabLocaleId(string id, string? modId = null)
         {
-            modId ??= Id;
+            modId ??= StarQHelper.Id;
             return $"Options.TAB[{modId}.{modId}.Mod.{id}]";
         }
 
         public static string GetOptionsGroupLocaleId(string id, string? modId = null)
         {
-            modId ??= Id;
+            modId ??= StarQHelper.Id;
             return $"Options.GROUP[{modId}.{modId}.Mod.{id}]";
         }
 
         public static string GetOptionsLabelLocaleId(string id, string? modId = null)
         {
-            modId ??= Id;
+            modId ??= StarQHelper.Id;
             return $"Options.OPTION[{modId}.{modId}.Mod.Setting.{id}]";
         }
 
         public static string GetOptionsDescLocaleId(string id, string? modId = null)
         {
-            modId ??= Id;
+            modId ??= StarQHelper.Id;
             return $"Options.OPTION_DESCRIPTION[{modId}.{modId}.Mod.Setting.{id}]";
         }
 
@@ -141,7 +128,7 @@ namespace StarQ.Shared.Extensions
             string? modId = null
         )
         {
-            modId ??= Id;
+            modId ??= StarQHelper.Id;
             return $"Options.{modId}.{modId}.Mod.{enumGroup.ToUpperInvariant()}[{enumValue}]";
         }
 
@@ -200,7 +187,10 @@ namespace StarQ.Shared.Extensions
 
         public static void UpdateDictionary()
         {
-            AddLocalization($"Options.SECTION[{Id}.{Id}.Mod]", ModName);
+            AddLocalization(
+                $"Options.SECTION[{StarQHelper.Id}.{StarQHelper.Id}.Mod]",
+                StarQHelper.ModName
+            );
 
             Dictionary<string, string> commonReplacements = CommonLocale();
             AddLocale?.Invoke();
@@ -225,18 +215,18 @@ namespace StarQ.Shared.Extensions
             {
                 try
                 {
-                    if (!entry.Key.Contains(Id))
+                    if (!entry.Key.Contains(StarQHelper.Id))
                         continue;
 
                     if (
                         !(
-                            entry.Value.Contains($"{Id}.Replacement.")
+                            entry.Value.Contains($"{StarQHelper.Id}.Replacement.")
                             || (entry.Value.Contains("{") && entry.Value.Contains("}"))
                         )
                     )
                         continue;
 
-                    string newValue = Expand(entry.Value, replacements, regex, Id);
+                    string newValue = Expand(entry.Value, replacements, regex, StarQHelper.Id);
 
                     if (newValue != entry.Value)
                     {
@@ -323,7 +313,7 @@ namespace StarQ.Shared.Extensions
                 [GetOptionsLabelLocaleId("ParadoxForum")] = Translate(
                     "Menu.ASSET_FORUM_LINK_LABEL"
                 ),
-                [$"{Id}.DefaultText"] = Translate("Options.INTERFACE_STYLE[default]"),
+                [$"{StarQHelper.Id}.DefaultText"] = Translate("Options.INTERFACE_STYLE[default]"),
             };
         }
     }

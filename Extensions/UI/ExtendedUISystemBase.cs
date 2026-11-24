@@ -22,7 +22,7 @@ namespace StarQ.Shared.Extensions.UI
         public ValueBindingHelper<T> CreateBinding<T>(string key, T initialValue)
         {
             var helper = new ValueBindingHelper<T>(
-                new(LogHelper.GetId(), key, initialValue, new GenericUIWriter<T?>())
+                new(StarQHelper.Id, key, initialValue, new GenericUIWriter<T?>())
             );
 
             AddBinding(helper.Binding);
@@ -40,11 +40,11 @@ namespace StarQ.Shared.Extensions.UI
         )
         {
             var helper = new ValueBindingHelper<T>(
-                new(LogHelper.GetId(), key, initialValue, new GenericUIWriter<T?>()),
+                new(StarQHelper.Id, key, initialValue, new GenericUIWriter<T?>()),
                 updateCallBack
             );
             var trigger = new TriggerBinding<T>(
-                LogHelper.GetId(),
+                StarQHelper.Id,
                 setterKey,
                 helper.UpdateCallback,
                 GenericUIReader<T>.Create()
@@ -61,7 +61,7 @@ namespace StarQ.Shared.Extensions.UI
         public GetterValueBinding<T> CreateBinding<T>(string key, Func<T> getterFunc)
         {
             var binding = new GetterValueBinding<T>(
-                LogHelper.GetId(),
+                StarQHelper.Id,
                 key,
                 getterFunc,
                 new GenericUIWriter<T>()
@@ -74,7 +74,7 @@ namespace StarQ.Shared.Extensions.UI
 
         public TriggerBinding CreateTrigger(string key, Action action)
         {
-            var binding = new TriggerBinding(LogHelper.GetId(), key, action);
+            var binding = new TriggerBinding(StarQHelper.Id, key, action);
 
             AddBinding(binding);
 
@@ -84,7 +84,7 @@ namespace StarQ.Shared.Extensions.UI
         public TriggerBinding<T1> CreateTrigger<T1>(string key, Action<T1> action)
         {
             var binding = new TriggerBinding<T1>(
-                LogHelper.GetId(),
+                StarQHelper.Id,
                 key,
                 action,
                 GenericUIReader<T1>.Create()
@@ -98,7 +98,7 @@ namespace StarQ.Shared.Extensions.UI
         public TriggerBinding<T1, T2> CreateTrigger<T1, T2>(string key, Action<T1, T2> action)
         {
             var binding = new TriggerBinding<T1, T2>(
-                LogHelper.GetId(),
+                StarQHelper.Id,
                 key,
                 action,
                 GenericUIReader<T1>.Create(),
@@ -116,7 +116,7 @@ namespace StarQ.Shared.Extensions.UI
         )
         {
             var binding = new TriggerBinding<T1, T2, T3>(
-                LogHelper.GetId(),
+                StarQHelper.Id,
                 key,
                 action,
                 GenericUIReader<T1>.Create(),
@@ -135,7 +135,7 @@ namespace StarQ.Shared.Extensions.UI
         )
         {
             var binding = new TriggerBinding<T1, T2, T3, T4>(
-                LogHelper.GetId(),
+                StarQHelper.Id,
                 key,
                 action,
                 GenericUIReader<T1>.Create(),
